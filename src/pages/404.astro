@@ -1,0 +1,39 @@
+---
+/**
+ * Folder: src/pages/
+ * Description: Accessible 404 Not Found page with return home action.
+ * This file: 404.astro
+ */
+
+import Layout from '../layouts/Layout.astro';
+import { Home, ArrowLeft } from 'lucide-react';
+---
+
+<Layout title="Halaman Tidak Ditemukan (404)">
+  <main class="min-h-screen flex items-center justify-center p-6 text-center">
+    <div class="max-w-md w-full space-y-6">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-slate-900 border border-slate-800 text-emerald-400 text-2xl font-bold">
+        404
+      </div>
+
+      <div class="space-y-2">
+        <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          Halaman Tidak Ditemukan
+        </h1>
+        <p class="text-sm text-slate-400 leading-relaxed">
+          Tautan yang Anda tuju mungkin telah dipindahkan atau tidak lagi tersedia.
+        </p>
+      </div>
+
+      <div>
+        <a
+          href="/"
+          class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-colors min-h-[44px]"
+        >
+          <Home class="w-4 h-4" />
+          <span>Kembali ke Beranda</span>
+        </a>
+      </div>
+    </div>
+  </main>
+</Layout>

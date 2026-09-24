@@ -1,0 +1,34 @@
+---
+/**
+ * Folder: src/components/
+ * Description: Reusable section heading component with badge and descriptive subtitle.
+ * This file: SectionHeader.astro
+ */
+
+interface Props {
+  badge?: string;
+  title: string;
+  subtitle?: string;
+  align?: 'center' | 'left';
+}
+
+const { badge, title, subtitle, align = 'center' } = Astro.props;
+---
+
+<div class={`max-w-3xl ${align === 'center' ? 'mx-auto text-center' : 'text-left'} space-y-3 mb-12 sm:mb-16`}>
+  {badge && (
+    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
+      <span>{badge}</span>
+    </div>
+  )}
+
+  <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
+    {title}
+  </h2>
+
+  {subtitle && (
+    <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl mx-auto">
+      {subtitle}
+    </p>
+  )}
+</div>

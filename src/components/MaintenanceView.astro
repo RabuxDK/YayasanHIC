@@ -1,0 +1,90 @@
+---
+/**
+ * Folder: src/components/
+ * Description: Clean, accessible maintenance mode screen rendered when website status is maintenance.
+ * This file: MaintenanceView.astro
+ */
+
+import { Wrench, MessageSquare, Phone, Mail } from 'lucide-react';
+import { buildWhatsAppUrl } from '../services/cms';
+import type { CmsContactContent } from '../types';
+
+interface Props {
+  siteName: string;
+  contact?: CmsContactContent;
+}
+
+const { siteName, contact = {} } = Astro.props;
+const waUrl = contact.whatsapp
+  ? buildWhatsAppUrl(contact.whatsapp, `Halo ${siteName}, saya menghubungi saat website dalam pemeliharaan.`)
+  : undefined;
+---
+
+<div class="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between p-6 sm:p-12 relative overflow-hidden">
+  {/* Header */}
+  <header class="flex items-center justify-between max-w-4xl mx-auto w-full">
+    <div class="flex items-center gap-2 text-white font-bold text-lg">
+      <span class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-black text-sm">
+        {siteName.charAt(0)}
+      </span>
+      <span>{siteName}</span>
+    </div>
+  </header>
+
+  {/* Main Maintenance Box */}
+  <main class="max-w-xl mx-auto w-full my-auto text-center py-12 space-y-6">
+    <div class="w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto shadow-lg shadow-amber-500/5">
+      <Wrench class="w-8 h-8" />
+    </div>
+
+    <div class="space-y-3">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold uppercase tracking-wider">
+        <span>Mode Pemeliharaan Sistem</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        Kami Segera Kembali
+      </h1>
+
+      <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-md mx-auto">
+        Website {siteName} sedang menjalani pembaruan rutin untuk meningkatkan kualitas layanan dan performa sistem kami.
+      </p>
+    </div>
+
+    {/* Contact Actions while under maintenance */}
+    <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+      {waUrl && (
+        <a
+          href={waUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-colors min-h-[44px] w-full sm:w-auto"
+        >
+          <MessageSquare class="w-4 h-4" />
+          <span>Chat WhatsApp Langsung</span>
+        </a>
+      )}
+
+      {contact.phone && (
+        <a
+          href={`tel:${contact.phone}`}
+          class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-slate-700 bg-slate-900 text-slate-200 font-semibold text-xs transition-colors min-h-[44px] w-full sm:w-auto"
+        >
+          <Phone class="w-4 h-4" />
+          <span>Hubungi Telepon</span>
+        </a>
+      )}
+    </div>
+
+    {contact.workingHours && (
+      <p class="text-xs text-slate-500 pt-4">
+        Jam Layanan: {contact.workingHours}
+      </p>
+    )}
+  </main>
+
+  {/* Footer */}
+  <footer class="max-w-4xl mx-auto w-full text-center text-xs text-slate-400 pt-8 border-t border-slate-900">
+    <p>&copy; {new Date().getFullYear()} {siteName}. Seluruh hak cipta dilindungi.</p>
+  </footer>
+</div>

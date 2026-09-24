@@ -1,0 +1,143 @@
+---
+/**
+ * Folder: src/components/
+ * Description: Accessible site footer component with real contact information and quick links.
+ * This file: Footer.astro
+ */
+
+import { MapPin, Phone, Mail, Clock, MessageSquare, ArrowUp } from 'lucide-react';
+import type { CmsContactContent } from '../types';
+import { buildWhatsAppUrl } from '../services/cms';
+
+interface Props {
+  siteName: string;
+  contact?: CmsContactContent;
+  story?: string;
+}
+
+const { siteName, contact = {}, story } = Astro.props;
+const currentYear = new Date().getFullYear();
+
+const waUrl = contact.whatsapp
+  ? buildWhatsAppUrl(contact.whatsapp, `Halo ${siteName}, saya menghubungi melalui link di website Anda.`)
+  : undefined;
+---
+
+<footer class="bg-slate-950 border-t border-slate-800/80 text-slate-300 pt-16 pb-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-slate-800/60">
+      {/* Brand Bio */}
+      <div class="space-y-4 lg:col-span-1">
+        <a href="#" class="inline-flex items-center gap-2 text-white font-bold text-xl tracking-tight">
+          <span class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-black text-sm">
+            {siteName.charAt(0)}
+          </span>
+          <span>{siteName}</span>
+        </a>
+
+        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+          {story || 'Menyajikan produk dan layanan terbaik dengan komitmen kualitas tinggi untuk kepuasan pelanggan kami.'}
+        </p>
+      </div>
+
+      {/* Navigation Links */}
+      <div class="space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-white">
+          Navigasi Cepat
+        </h4>
+        <ul class="space-y-2 text-xs sm:text-sm">
+          <li>
+            <a href="#tentang" class="hover:text-emerald-400 transition-colors py-1 inline-block">
+              Tentang Kami
+            </a>
+          </li>
+          <li>
+            <a href="#keunggulan" class="hover:text-emerald-400 transition-colors py-1 inline-block">
+              Keunggulan Produk
+            </a>
+          </li>
+          <li>
+            <a href="#layanan" class="hover:text-emerald-400 transition-colors py-1 inline-block">
+              Paket & Layanan
+            </a>
+          </li>
+          <li>
+            <a href="#produk" class="hover:text-emerald-400 transition-colors py-1 inline-block">
+              Katalog Produk
+            </a>
+          </li>
+          <li>
+            <a href="#faq" class="hover:text-emerald-400 transition-colors py-1 inline-block">
+              Tanya Jawab (FAQ)
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      {/* Contact Details */}
+      <div class="space-y-3 lg:col-span-2">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-white">
+          Kontak & Alamat
+        </h4>
+        <ul class="space-y-3 text-xs sm:text-sm">
+          {contact.address && (
+            <li class="flex items-start gap-2.5">
+              <MapPin class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <span>{contact.address}</span>
+            </li>
+          )}
+          {contact.whatsapp && (
+            <li class="flex items-center gap-2.5">
+              <MessageSquare class="w-4 h-4 text-emerald-400 shrink-0" />
+              <a href={waUrl} target="_blank" rel="noopener noreferrer" class="hover:text-emerald-400 hover:underline">
+                WhatsApp: {contact.whatsapp}
+              </a>
+            </li>
+          )}
+          {contact.phone && (
+            <li class="flex items-center gap-2.5">
+              <Phone class="w-4 h-4 text-emerald-400 shrink-0" />
+              <a href={`tel:${contact.phone}`} class="hover:text-emerald-400 hover:underline">
+                Telepon: {contact.phone}
+              </a>
+            </li>
+          )}
+          {contact.email && (
+            <li class="flex items-center gap-2.5">
+              <Mail class="w-4 h-4 text-emerald-400 shrink-0" />
+              <a href={`mailto:${contact.email}`} class="hover:text-emerald-400 hover:underline">
+                Email: {contact.email}
+              </a>
+            </li>
+          )}
+          {contact.workingHours && (
+            <li class="flex items-center gap-2.5">
+              <Clock class="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>Jam Operasional: {contact.workingHours}</span>
+            </li>
+          )}
+        </ul>
+      </div>
+    </div>
+
+    {/* Bottom Bar */}
+    <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+      <p>&copy; {currentYear} {siteName}. Seluruh hak cipta dilindungi.</p>
+      
+      <div class="flex items-center gap-4">
+        <span class="inline-flex items-center gap-1.5 text-slate-400">
+          <span>Didukung oleh</span>
+          <span class="font-semibold text-slate-300">RabuxID CMS</span>
+        </span>
+
+        <a
+          href="#"
+          class="p-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-colors flex items-center justify-center min-w-[36px] min-h-[36px]"
+          aria-label="Kembali ke atas halaman"
+        >
+          <ArrowUp class="w-4 h-4" />
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

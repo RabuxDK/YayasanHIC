@@ -1,0 +1,71 @@
+---
+/**
+ * Folder: src/layouts/
+ * Description: Root HTML layout with SEO meta tags, OpenGraph, JSON-LD schema, and Tailwind CSS v4.
+ * This file: Layout.astro
+ */
+
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonicalUrl?: string;
+  siteName?: string;
+}
+
+const {
+  title = 'Website Boilerplate | Solusi Bisnis & Profil Perusahaan',
+  description = 'Template website modern berbasis Astro, Tailwind CSS v4, dan React 19 terintegrasi dengan RabuxID Headless CMS.',
+  image = 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&auto=format&fit=crop&q=80',
+  canonicalUrl = Astro.url.href,
+  siteName = 'Brand Boilerplate',
+} = Astro.props;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  'name': siteName,
+  'description': description,
+  'image': image,
+  'url': canonicalUrl,
+};
+---
+
+<!doctype html>
+<html lang="id" class="bg-slate-950 text-slate-100 scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    {/* Primary SEO Meta Tags */}
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    {/* Open Graph / Facebook */}
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <meta property="og:site_name" content={siteName} />
+
+    {/* Twitter */}
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalUrl} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={image} />
+
+    {/* Structured Schema JSON-LD */}
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body class="min-h-screen bg-slate-950 text-slate-100 antialiased selection:bg-emerald-500 selection:text-slate-950">
+    <slot />
+  </body>
+</html>
