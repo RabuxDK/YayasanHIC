@@ -10,8 +10,7 @@ Template landing page modern, ultra-cepat, dan SEO-ready berbasis **Astro + Tail
 - 🏝️ **React 19 Islands**: Interaktivitas dinamis pada komponen kritis (Navbar, Formulir Kontak, Accordion FAQ, Katalog Produk, Filter Kategori) dengan pemuatan terisolasi (`client:load`, `client:visible`).
 - 🎨 **Tailwind CSS v4**: Desain modern menggunakan mesin styling `@tailwindcss/vite` terbaru.
 - 📦 **RabuxID Headless CMS Ready**: Mengonsumsi data website dan katalog produk secara langsung dari REST API RabuxID (`/api/cms/v1/websites/:slug`).
-- 🛡️ **Offline Resilient & Safe Build**: Dilengkapi data cadangan (`src/constants/fallbackData.ts`) sehingga proses kompilasi (`npm run build`) **tidak akan pernah gagal** meskipun backend sedang offline atau dalam tahap inisialisasi.
-- 🧩 **Arbitrary Dynamic Sections**: Fleksibilitas penuh untuk menampilkan seksi standar (`hero`, `about`, `services`, `benefits`, `pricing`, `faq`, `contact`) maupun seksi kustom bebas kolom (`testimonials`, `gallery`, `team`, dll).
+- 🧩 **Dynamic Sections**: Section CMS bebas (`hero`, `faq`, `testimonials`, `gallery`, dll) dibaca lewat helper `src/services/rabuxCms.ts` (`getSection`, `getField`, `getItems`). Build gagal dengan pesan jelas bila CMS tidak bisa dibaca.
 - 🤖 **Model Context Protocol (MCP) Integration**: Kompatibel dengan AI Coding Agent (Claude Desktop, Antigravity, Cursor, Cline) untuk manajemen konten, produk, dan inspeksi otomatis.
 - ♿ **Aksesibilitas & Standar Craftsmanship**: Memenuhi standar kontras WCAG AA, navigasi keyboard (Esc, Tab), dan ukuran target ketukan mobile minimal 44x44px.
 
@@ -34,19 +33,18 @@ Projects/boilerplate-astro/
 │   │   ├── FaqAccordion.tsx    # Accordion FAQ ramah aksesibilitas
 │   │   ├── PricingCards.tsx    # Kartu paket harga dengan trigger WhatsApp otomatis
 │   │   └── ProductsCatalog.tsx # Katalog produk dengan filter kategori & pemesanan instan
-│   ├── constants/
-│   │   └── fallbackData.ts     # Data cadangan aman bebas brand spesifik (zero client data)
 │   ├── layouts/
 │   │   └── Layout.astro        # Layout HTML induk: SEO Meta, OpenGraph, JSON-LD Schema
 │   ├── pages/
 │   │   ├── index.astro         # Halaman utama landing page konsumsi CMS
 │   │   └── 404.astro           # Halaman 404 Not Found ramah pengguna
 │   ├── services/
-│   │   └── cms.ts              # Fetcher CMS, format mata uang IDR, & utilitas WhatsApp
+│   │   ├── rabuxCms.ts         # Helper CMS: getCms, getSection, getSections, getField, getItems
+│   │   └── cms.ts              # Format mata uang IDR & utilitas WhatsApp
 │   ├── styles/
 │   │   └── global.css          # Entry point styling Tailwind v4
 │   └── types/
-│       └── index.ts            # Antarmuka TypeScript untuk skema data CMS
+│       └── index.ts            # Tipe props komponen
 ├── .env.example                # Contoh konfigurasi variabel lingkungan
 ├── .env                        # Konfigurasi aktif lokal
 ├── AGENTS.md                   # Panduan teknis lengkap & instruksi agen AI
@@ -74,7 +72,7 @@ Salin berkas `.env.example` menjadi `.env` jika belum ada:
 ```bash
 cp .env.example .env
 ```
-Sesuaikan variabel lingkungan:
+Sesuaikan variabel lingkungan (`PUBLIC_API_URL` dan `PUBLIC_WEBSITE_SLUG` wajib, build gagal bila kosong):
 ```env
 # URL Backend RabuxID CMS
 PUBLIC_API_URL=http://localhost:3000
@@ -107,40 +105,41 @@ Buka browser pada alamat [http://localhost:4321](http://localhost:4321) untuk me
 
 ## 🌐 Integrasi dengan RabuxID Headless CMS
 
-### Endpoint REST API
-Website membaca data terpublikasi dari endpoint:
-```http
-GET /api/cms/v1/websites/:slug
-```
-Untuk menguji draf konten yang belum dipublikasikan ke publik, tambahkan query parameter `preview=true`:
-```http
-GET /api/cms/v1/websites/:slug?preview=true
-```
+Data dibaca saat build lewat `src/services/rabuxCms.ts` dari `GET ${PUBLIC_API_URL}/api/cms/v1/websites/${PUBLIC_WEBSITE_SLUG}` (konten live yang sudah dipublish).
 
-### Resiliensi & Mekanisme Cadangan
-Layanan pengambilan data (`src/services/cms.ts`) dilengkapi dengan timeout otomatis (4 detik) dan penangkap error. Apabila backend sedang offline, slug belum terdaftar, atau jaringan terputus, sistem secara otomatis beralih menggunakan data cadangan dari [`src/constants/fallbackData.ts`](file:///D:/RabuxID/Projects/boilerplate-astro/src/constants/fallbackData.ts) tanpa menghentikan build.
+- Satu fetch per build. Hasilnya di-cache, jadi `getField`/`getItems` di banyak komponen tidak menambah request.
+- Tidak ada data cadangan. Env kosong, jaringan gagal, atau respons non-2xx menghentikan build dengan pesan berisi URL dan status (misalnya `... -> HTTP 404`).
+- Content Field `image` yang diawali `/uploads/` otomatis diberi prefix `PUBLIC_API_URL`, jadi gambar dari Media Library tampil walau situs di-host terpisah.
+- Preview draf tidak didukung helper. Situs ini statis, dan `?preview=true` butuh kredensial pemilik atau admin. Publish konten dulu, lalu build.
 
 ---
 
-## 🧩 Seksi Bebas Kolom (Arbitrary Dynamic Sections)
+## 🧩 Dynamic Sections
 
-Selain seksi baku (`hero`, `about`, `benefits`, `services`, `faq`, `pricing`, `contact`), CMS RabuxID mendukung seksi bebas kolom. Agen atau pengembang dapat menambahkan dan merender seksi baru secara fleksibel:
+Setiap section berbentuk `{ key, title, order, fields }`, dan tiap Field `{ key, title, type, content }` dengan `type` salah satu `text`, `textarea`, `image`, `url`, `number`, `boolean`, `list`. Section dan field bisa tidak ada, jadi selalu beri default:
 
 ```astro
 ---
 // src/pages/index.astro
-const customSection = cms.sections['nama_seksi_kustom'];
+import { getSection, getField, getItems } from '../services/rabuxCms';
+
+const promo = await getSection('promo');
+const promoText = String((await getField('promo', 'description')) ?? '');
+const team = await getItems('team', 'items'); // Field list -> [{ name, role, photo }, ...]
 ---
 
-{customSection && (
+{promo && (
   <section class="py-20 bg-slate-900 border-t border-slate-800">
     <div class="max-w-7xl mx-auto px-4">
-      <h2 class="text-3xl font-bold text-white">{customSection.title}</h2>
-      <p class="text-slate-300 mt-2">{customSection.description}</p>
+      <h2 class="text-3xl font-bold text-white">{promo.title}</h2>
+      <p class="text-slate-300 mt-2">{promoText}</p>
+      <ul>{team.map((m) => <li>{String(m.name)}</li>)}</ul>
     </div>
   </section>
 )}
 ```
+
+Lihat `AGENTS.md` bagian 3 dan 4 untuk daftar key yang dibaca `index.astro`.
 
 ---
 

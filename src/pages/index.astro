@@ -18,7 +18,8 @@ import { FaqAccordion } from '../components/islands/FaqAccordion';
 import { PricingCards } from '../components/islands/PricingCards';
 import { ProductsCatalog } from '../components/islands/ProductsCatalog';
 
-import { fetchCmsData } from '../services/cms';
+import { getCms, getField, getItems } from '../services/rabuxCms';
+import type { CmsProduct } from '../types';
 import {
   Sparkles,
   ShieldCheck,
@@ -35,17 +36,83 @@ import {
   ArrowRight,
 } from 'lucide-react';
 
-// Fetch dynamic content from RabuxID CMS (with offline fallback safety)
-const cms = await fetchCmsData();
+// One fetch per build via rabuxCms; a failed fetch fails the build. Missing sections/fields become '' or [].
+const data = await getCms();
+const str = (v: unknown) => (v == null ? '' : String(v));
+const text = async (section: string, field: string) => str(await getField(section, field));
 
-const hero = cms.sections.hero || {};
-const about = cms.sections.about || {};
-const benefits = cms.sections.benefits || [];
-const services = cms.sections.services || [];
-const contact = cms.sections.contact || {};
-const faq = cms.sections.faq || {};
-const pricing = cms.sections.pricing || {};
-const testimonials = cms.sections.testimonials || [];
+const products: CmsProduct[] = data.products.map((p) => ({
+  id: p.id,
+  name: p.name,
+  description: p.description ?? undefined,
+  price: p.price ?? 0,
+  category: p.category,
+  image: p.image ?? undefined,
+  isAvailable: p.status === 'active',
+  stock: p.stock,
+}));
+const cms = { name: data.name, status: data.status, products };
+
+const hero = {
+  headline: await text('hero', 'headline'),
+  subheadline: await text('hero', 'subheadline'),
+  ctaText: await text('hero', 'cta_text'),
+  ctaLink: await text('hero', 'cta_link'),
+  badge: await text('hero', 'badge'),
+  heroImage: await text('hero', 'hero_image'),
+};
+const about = {
+  title: await text('about', 'title'),
+  story: await text('about', 'story'),
+  image: await text('about', 'image'),
+  mission: await text('about', 'mission'),
+};
+const contact = {
+  email: await text('contact', 'email'),
+  phone: await text('contact', 'phone'),
+  whatsapp: await text('contact', 'whatsapp'),
+  address: await text('contact', 'address'),
+  workingHours: await text('contact', 'working_hours'),
+};
+const benefits = (await getItems('benefits', 'items')).map((i) => ({
+  id: str(i.id),
+  title: str(i.title),
+  description: str(i.description),
+  icon: str(i.icon),
+}));
+const services = (await getItems('services', 'items')).map((i) => ({
+  id: str(i.id),
+  name: str(i.name),
+  description: str(i.description),
+  price: str(i.price),
+  featured: i.featured === true,
+}));
+const faq = {
+  title: await text('faq', 'title'),
+  subtitle: await text('faq', 'subtitle'),
+  items: (await getItems('faq', 'items')).map((i) => ({ question: str(i.question), answer: str(i.answer) })),
+};
+const pricing = {
+  title: await text('pricing', 'title'),
+  subtitle: await text('pricing', 'subtitle'),
+  items: (await getItems('pricing', 'items')).map((i) => ({
+    name: str(i.name),
+    price: str(i.price),
+    period: str(i.period),
+    description: str(i.description),
+    // Nested arrays inside a List_Item are stored as a newline-joined textarea.
+    features: str(i.features).split('\n').map((f) => f.trim()).filter(Boolean),
+    isPopular: i.is_popular === true,
+    ctaText: str(i.cta_text),
+  })),
+};
+const testimonials = (await getItems('testimonials', 'items')).map((i) => ({
+  id: str(i.id),
+  quote: str(i.quote),
+  author: str(i.author),
+  role: str(i.role),
+  avatar: str(i.avatar),
+}));
 
 // Map icon strings from CMS to Lucide icon components
 const iconMap: Record<string, any> = {

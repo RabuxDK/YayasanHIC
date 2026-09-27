@@ -36,19 +36,18 @@ Projects/boilerplate-astro/
 │   │   ├── FaqAccordion.tsx    # Accordion FAQ dengan semantik ARIA ramah keyboard
 │   │   ├── PricingCards.tsx    # Kartu paket harga dengan pemesanan otomatis via WhatsApp
 │   │   └── ProductsCatalog.tsx # Katalog produk dengan filter kategori & pemesanan instan
-│   ├── constants/
-│   │   └── fallbackData.ts     # Data contoh & cadangan aman bebas brand spesifik
 │   ├── layouts/
 │   │   └── Layout.astro        # Layout HTML induk: SEO Meta, OpenGraph, JSON-LD Schema
 │   ├── pages/
 │   │   ├── index.astro         # Halaman utama landing page konsumsi CMS
 │   │   └── 404.astro           # Halaman 404 Not Found yang ramah pengguna
 │   ├── services/
-│   │   └── cms.ts              # Data fetcher & utility generator tautan WhatsApp
+│   │   ├── rabuxCms.ts         # Helper CMS generik: getCms, getSection, getSections, getField, getItems
+│   │   └── cms.ts              # formatCurrency & buildWhatsAppUrl
 │   ├── styles/
 │   │   └── global.css          # Entry point Tailwind v4 (@import "tailwindcss";)
 │   └── types/
-│       └── index.ts            # Definisi antarmuka TypeScript untuk seluruh struktur CMS
+│       └── index.ts            # Tipe props komponen (kontak, FAQ, paket harga, produk)
 ├── .env.example                # Dokumentasi variabel lingkungan (boilerplate generic)
 ├── .gitignore                  # Aturan pengabaian berkas git
 ├── astro.config.mjs            # Konfigurasi Astro, React 19 dedupe, Tailwind v4
@@ -61,55 +60,61 @@ Projects/boilerplate-astro/
 
 ## 3. Integrasi dengan RabuxID Headless CMS
 
-### Endpoint REST API Publik
-Website membaca data terpublikasi dari endpoint:
-```http
-GET /api/cms/v1/websites/:slug
-```
-Query parameter opsional untuk pratinjau draf belum tayang:
-```http
-GET /api/cms/v1/websites/:slug?preview=true
-```
-
 ### Variabel Lingkungan (`.env`)
-Pastikan selalu menggunakan data konfigurasi umum untuk boilerplate:
 ```bash
-PUBLIC_API_URL=http://localhost:3000
-PUBLIC_WEBSITE_SLUG=boilerplate-example
+PUBLIC_API_URL=http://localhost:3000       # wajib, base URL backend RabuxID
+PUBLIC_WEBSITE_SLUG=boilerplate-example    # wajib, slug website di RabuxID
 PUBLIC_SITE_URL=https://example.com
 ```
 
-### Prinsip Resiliensi & Fallback
-Fungsi `fetchCmsData()` pada `src/services/cms.ts` dilengkapi dengan `AbortController` timeout (4 detik) dan penangkap error otomatis:
-1. Jika backend aktif, data database terbaru yang telah di-publish akan diambil.
-2. Jika backend sedang offline, restart, atau slug belum dibuat, fungsi mengembalikan `FALLBACK_CMS_DATA` dari `src/constants/fallbackData.ts`.
-3. Proses kompilasi build (`npm run build`) **dijamin tidak akan pernah crash** akibat kegagalan jaringan atau server mati.
+### Helper `src/services/rabuxCms.ts`
+Semua data CMS dibaca lewat helper ini dari `GET ${PUBLIC_API_URL}/api/cms/v1/websites/${PUBLIC_WEBSITE_SLUG}` (konten live yang sudah dipublish).
+
+| Fungsi | Hasil |
+|---|---|
+| `getCms()` | Seluruh respons: `name`, `status`, `sections`, `products` |
+| `getSection(key)` | Satu Section `{ key, title, order, fields }` atau `undefined` |
+| `getSections()` | Semua Section, urut `order` lalu `key` |
+| `getField(section, field)` | `content` sebuah Field atau `undefined` |
+| `getItems(section, field)` | Item Field `list` sebagai objek `{ [subKey]: content }`, `[]` bila tidak ada |
+
+Perilaku:
+- Satu fetch per proses build. Hasil (termasuk promise yang gagal) di-cache, jadi pemanggilan dari banyak komponen tidak menambah request.
+- Tidak ada fallback. Build gagal bila `PUBLIC_API_URL`/`PUBLIC_WEBSITE_SLUG` kosong, jaringan gagal, atau respons non-2xx. Pesan error memuat URL dan status, misalnya `[rabuxCms] http://localhost:3000/api/cms/v1/websites/x -> HTTP 404`.
+- Content Field `image` (termasuk sub-field di dalam `list`) yang diawali `/uploads/` dikembalikan sebagai `${PUBLIC_API_URL}/uploads/...`, supaya gambar Media Library tampil walau situs di-host terpisah dari API. Path `/` lain (aset lokal situs) tidak diubah.
+- Preview draf tidak didukung. Situs ini SSG, sedangkan `?preview=true` membutuhkan kredensial pemilik atau admin. Publish dulu, lalu build.
 
 ---
 
 ## 4. Pola Dynamic Arbitrary Sections & Contoh Penggunaan
 
-CMS RabuxID mendukung seksi dinamis bebas kolom kaku. Semua seksi tersimpan di objek `data.sections`.
+Tidak ada section wajib. Setiap website punya Sections_Map sendiri: `sections[key] = { key, title, order, fields }`, dan tiap Field berbentuk `{ key, title, type, content }` dengan `type` salah satu `text`, `textarea`, `image`, `url`, `number`, `boolean`, `list`. Content Field `list` adalah array List_Item, dan tiap List_Item adalah array sub-field non-list. Selalu beri nilai default karena section atau field bisa tidak ada (website baru bisa punya `sections: {}`).
 
-### A. Mengambil Seksi Standar
+### A. Membaca Field dan List
 ```ts
-const hero = cms.sections.hero || {};
-const about = cms.sections.about || {};
-const benefits = cms.sections.benefits || [];
-const services = cms.sections.services || [];
-const contact = cms.sections.contact || {};
-const faq = cms.sections.faq || {};
-const pricing = cms.sections.pricing || {};
+import { getField, getItems } from '../services/rabuxCms';
+
+const str = (v: unknown) => (v == null ? '' : String(v));
+const hero = {
+  headline: str(await getField('hero', 'headline')),
+  heroImage: str(await getField('hero', 'hero_image')), // /uploads/... sudah diberi prefix PUBLIC_API_URL
+};
+const faqItems = (await getItems('faq', 'items')).map((i) => ({
+  question: str(i.question),
+  answer: str(i.answer),
+}));
 ```
+Key yang dibaca `src/pages/index.astro`: `hero` (`headline`, `subheadline`, `cta_text`, `cta_link`, `badge`, `hero_image`), `about` (`title`, `story`, `image`, `mission`), `contact` (`email`, `phone`, `whatsapp`, `address`, `working_hours`), serta list `items` di `benefits`, `services`, `faq`, `pricing`, `testimonials`.
 
-### B. Menambahkan & Menangani Seksi Kustom (Arbitrary Custom Sections)
-Klien atau agen dapat menambahkan seksi bebas kolom (misalnya `testimonials`, `gallery`, `team`, `milestones`, atau `custom_cta`).
+### B. Menambahkan Seksi Kustom
+Klien atau agen dapat menambahkan section apa pun (misalnya `testimonials`, `gallery`, `team`). Di Astro, baca dengan `getItems`/`getField` dan render hanya bila ada isinya.
 
-#### Contoh 1: Seksi Testimoni (`testimonials`)
+#### Contoh 1: Seksi Testimoni (`testimonials`, Field `items` bertipe `list`)
 ```astro
 ---
 // src/pages/index.astro
-const testimonials = cms.sections.testimonials || [];
+import { getItems } from '../services/rabuxCms';
+const testimonials = await getItems('testimonials', 'items');
 ---
 
 {testimonials.length > 0 && (
@@ -121,7 +126,7 @@ const testimonials = cms.sections.testimonials || [];
         subtitle="Kepuasan pelanggan adalah prioritas utama kami."
       />
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {testimonials.map((item: any) => (
+        {testimonials.map((item) => (
           <div class="p-6 rounded-2xl bg-slate-950 border border-slate-800">
             <p class="text-slate-300 italic">"{item.quote}"</p>
             <div class="mt-4 flex items-center gap-3">
@@ -141,10 +146,10 @@ const testimonials = cms.sections.testimonials || [];
 )}
 ```
 
-#### Contoh 2: Seksi Galeri Portofolio (`gallery`)
+#### Contoh 2: Seksi Galeri Portofolio (`gallery`, sub-field `url` bertipe `image`)
 ```astro
 ---
-const gallery = cms.sections.gallery || [];
+const gallery = await getItems('gallery', 'items');
 ---
 
 {gallery.length > 0 && (
@@ -152,9 +157,9 @@ const gallery = cms.sections.gallery || [];
     <div class="max-w-7xl mx-auto px-4">
       <SectionHeader badge="Galeri" title="Dokumentasi & Portofolio" />
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {gallery.map((img: any) => (
+        {gallery.map((img) => (
           <div class="rounded-xl overflow-hidden aspect-square border border-slate-800">
-            <img src={img.url} alt={img.caption || 'Foto'} class="w-full h-full object-cover" />
+            <img src={String(img.url)} alt={String(img.caption || 'Foto')} class="w-full h-full object-cover" />
           </div>
         ))}
       </div>
@@ -320,21 +325,29 @@ Jika seorang AI Agent diminta memperbarui atau menyesuaikan website klien:
      "slug": "boilerplate-example",
      "sections": {
        "hero": {
-         "headline": "Solusi Digital Terpadu",
-         "subheadline": "Meningkatkan daya saing bisnis Anda dengan teknologi mutakhir.",
-         "ctaText": "Hubungi Kami",
-         "ctaLink": "#kontak"
+         "key": "hero", "title": "Hero", "order": 0,
+         "fields": [
+           { "key": "headline", "title": "Judul", "type": "text", "content": "Solusi Digital Terpadu" },
+           { "key": "cta_text", "title": "Teks tombol", "type": "text", "content": "Hubungi Kami" },
+           { "key": "cta_link", "title": "Link tombol", "type": "url", "content": "#kontak" }
+         ]
        },
-       "testimonials": [
-         {
-           "quote": "Layanan luar biasa dan sangat profesional!",
-           "author": "Ahmad Dani",
-           "role": "CEO Tech Corp"
-         }
-       ]
+       "testimonials": {
+         "key": "testimonials", "title": "Testimoni", "order": 5,
+         "fields": [
+           { "key": "items", "title": "Testimoni", "type": "list", "content": [
+             [
+               { "key": "quote", "title": "Kutipan", "type": "textarea", "content": "Pelayanannya cepat dan rapi." },
+               { "key": "author", "title": "Nama", "type": "text", "content": "Nama Pelanggan" }
+             ]
+           ] }
+         ]
+       },
+       "gallery": null
      }
    }
    ```
+   Patch digabung per key section ke draf (satu section diganti utuh, tidak di-merge per field). `null` menghapus section saat publish.
 
 3. **Langkah 3: Publikasikan Perubahan**
    Setelah verifikasi, panggil tool `publish_website_changes`:
