@@ -60,6 +60,7 @@ export function getCms(): Promise<CmsResponse> {
 async function load(): Promise<CmsResponse> {
   const base: string | undefined = import.meta.env.PUBLIC_API_URL;
   const slug: string | undefined = import.meta.env.PUBLIC_WEBSITE_SLUG;
+  const apiKey: string | undefined = import.meta.env.PUBLIC_WEBSITE_API_KEY || import.meta.env.PUBLIC_CMS_API_KEY;
   const missing = [!base && 'PUBLIC_API_URL', !slug && 'PUBLIC_WEBSITE_SLUG'].filter(Boolean);
   if (!base || !slug) throw new Error(`[rabuxCms] environment variable wajib belum diset: ${missing.join(', ')}`);
 
@@ -67,7 +68,12 @@ async function load(): Promise<CmsResponse> {
   const url = `${apiBase}/api/cms/v1/websites/${encodeURIComponent(slug)}`;
   let res: Response;
   try {
-    res = await fetch(url, { headers: { Accept: 'application/json' } });
+    res = await fetch(url, {
+      headers: {
+        Accept: 'application/json',
+        ...(apiKey ? { 'x-api-key': apiKey } : {}),
+      },
+    });
   } catch (err) {
     throw new Error(`[rabuxCms] ${url} -> request gagal: ${err instanceof Error ? err.message : String(err)}`, { cause: err });
   }
