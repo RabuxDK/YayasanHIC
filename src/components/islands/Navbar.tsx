@@ -51,13 +51,15 @@ export function Navbar({ siteName, whatsapp, phone }: NavbarProps) {
     };
   }, [isOpen]);
 
+  // Root-relative anchors so the same bar works on /blog and on post pages.
   const navLinks = [
-    { label: 'Tentang Kami', href: '#tentang' },
-    { label: 'Keunggulan', href: '#keunggulan' },
-    { label: 'Layanan', href: '#layanan' },
-    { label: 'Katalog Produk', href: '#produk' },
-    { label: 'FAQ', href: '#faq' },
-    { label: 'Kontak', href: '#kontak' },
+    { label: 'Tentang Kami', href: '/#tentang' },
+    { label: 'Keunggulan', href: '/#keunggulan' },
+    { label: 'Layanan', href: '/#layanan' },
+    { label: 'Katalog Produk', href: '/#produk' },
+    { label: 'Blog', href: '/blog' },
+    { label: 'FAQ', href: '/#faq' },
+    { label: 'Kontak', href: '/#kontak' },
   ];
 
   const waHref = whatsapp
@@ -76,7 +78,7 @@ export function Navbar({ siteName, whatsapp, phone }: NavbarProps) {
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo / Brand Name */}
           <a
-            href="#"
+            href="/"
             className="flex items-center gap-2 text-white font-bold text-lg sm:text-xl tracking-tight focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-lg p-1"
           >
             <span className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-black text-sm">

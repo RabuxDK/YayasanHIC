@@ -1,4 +1,4 @@
----
+﻿---
 /**
  * Folder: src/components/
  * Description: Accessible site footer component with real contact information and quick links.
@@ -28,7 +28,7 @@ const waUrl = contact.whatsapp
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-slate-800/60">
       {/* Brand Bio */}
       <div class="space-y-4 lg:col-span-1">
-        <a href="#" class="inline-flex items-center gap-2 text-white font-bold text-xl tracking-tight">
+        <a href="/" class="inline-flex items-center gap-2 text-white font-bold text-xl tracking-tight">
           <span class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-black text-sm">
             {siteName.charAt(0)}
           </span>
@@ -47,28 +47,33 @@ const waUrl = contact.whatsapp
         </h4>
         <ul class="space-y-2 text-xs sm:text-sm">
           <li>
-            <a href="#tentang" class="hover:text-emerald-400 transition-colors py-1 inline-block">
+            <a href="/#tentang" class="hover:text-emerald-400 transition-colors py-1 inline-block">
               Tentang Kami
             </a>
           </li>
           <li>
-            <a href="#keunggulan" class="hover:text-emerald-400 transition-colors py-1 inline-block">
+            <a href="/#keunggulan" class="hover:text-emerald-400 transition-colors py-1 inline-block">
               Keunggulan Produk
             </a>
           </li>
           <li>
-            <a href="#layanan" class="hover:text-emerald-400 transition-colors py-1 inline-block">
+            <a href="/#layanan" class="hover:text-emerald-400 transition-colors py-1 inline-block">
               Paket & Layanan
             </a>
           </li>
           <li>
-            <a href="#produk" class="hover:text-emerald-400 transition-colors py-1 inline-block">
+            <a href="/#produk" class="hover:text-emerald-400 transition-colors py-1 inline-block">
               Katalog Produk
             </a>
           </li>
           <li>
-            <a href="#faq" class="hover:text-emerald-400 transition-colors py-1 inline-block">
+            <a href="/#faq" class="hover:text-emerald-400 transition-colors py-1 inline-block">
               Tanya Jawab (FAQ)
+            </a>
+          </li>
+          <li>
+            <a href="/blog" class="hover:text-emerald-400 transition-colors py-1 inline-block">
+              Blog & Artikel
             </a>
           </li>
         </ul>

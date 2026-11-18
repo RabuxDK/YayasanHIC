@@ -40,6 +40,23 @@ export interface CmsProduct {
   image: string | null;
   status: string;
 }
+export interface CmsPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string;
+  coverImage: string | null;
+  category: string | null;
+  tags: string[];
+  publishedAt: string | null;
+  authorName: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  ogImage: string | null;
+  readingTime: number;
+}
+
 export interface CmsResponse {
   id: string;
   name: string;
@@ -48,6 +65,7 @@ export interface CmsResponse {
   status: string;
   sections: Record<string, Section>;
   products: CmsProduct[];
+  posts: CmsPost[];
 }
 
 let cache: Promise<CmsResponse> | undefined;
@@ -82,18 +100,33 @@ async function load(): Promise<CmsResponse> {
   const data = (await res.json()) as CmsResponse;
   data.sections ??= {};
   data.products ??= [];
+  data.posts ??= [];
   // Media_Library uploads live on the API host; prefix them so sites hosted elsewhere can load them.
   const fixImage = (f: ScalarField | Field) => {
     if (f.type === 'image' && typeof f.content === 'string' && f.content.startsWith('/uploads/')) {
       f.content = `${apiBase}${f.content}`;
     }
   };
+  const fixUrl = (url: string | null): string | null =>
+    url && url.startsWith('/uploads/') ? `${apiBase}${url}` : url;
+
   for (const section of Object.values(data.sections)) {
     for (const field of section.fields) {
       fixImage(field);
       if (field.type === 'list' && Array.isArray(field.content)) field.content.forEach((item) => item.forEach(fixImage));
     }
   }
+
+  // Post bodies are HTML written in the panel; their <img src="/uploads/..."> need the same host prefix.
+  for (const post of data.posts) {
+    post.coverImage = fixUrl(post.coverImage);
+    post.ogImage = fixUrl(post.ogImage);
+    post.content = post.content.replace(
+      /(<img[^>]+src=["'])(\/uploads\/[^"']+)(["'])/g,
+      (_match, before: string, src: string, after: string) => `${before}${apiBase}${src}${after}`
+    );
+  }
+
   return data;
 }
 
@@ -116,4 +149,13 @@ export async function getItems(sectionKey: string, fieldKey: string): Promise<Re
   const content = await getField(sectionKey, fieldKey);
   if (!Array.isArray(content)) return [];
   return content.map((item) => Object.fromEntries(item.map((f) => [f.key, f.content])));
+}
+
+/** Published posts, newest first. */
+export async function getPosts(): Promise<CmsPost[]> {
+  return (await getCms()).posts;
+}
+
+export async function getPost(slug: string): Promise<CmsPost | undefined> {
+  return (await getCms()).posts.find((post) => post.slug === slug);
 }
