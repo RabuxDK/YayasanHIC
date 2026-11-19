@@ -7,7 +7,14 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/hic/Header.astro';
 import Footer from '../components/hic/Footer.astro';
 import { DonationQuick } from '../components/islands/DonationQuick';
-import { site, programs, dayRhythm, ways, wali, gallery, faq, psb, donation } from '../data/hic';
+import { site, programs, dayRhythm, ways, wali, gallery, faq, psb, donation, sambutan, articles, achievements } from '../data/hic';
+
+const formatDate = (iso: string) =>
+  new Date(`${iso}T00:00:00`).toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
 
 const strip = [gallery[0], gallery[1], gallery[2], gallery[3], gallery[4], gallery[7]];
 
@@ -28,7 +35,7 @@ const mosaicSizes = [
     <section class="hero on-dark">
       <div class="container stage-inner">
         <div class="stage-copy">
-          <h1>Tempat anak tumbuh <span class="mark">bersama Al-Qur&rsquo;an</span></h1>
+          <h1>Tempat anak tumbuh bersama <span class="mark">Al-Qur&rsquo;an</span></h1>
           <p class="hero-lede">Pembinaan bacaan, hafalan, dan adab dalam lingkungan yang tenang.</p>
           <div class="hero-actions">
             <a class="btn btn-solid btn-lg" href="/psb">Daftar santri baru</a>
@@ -125,6 +132,36 @@ const mosaicSizes = [
               <p>{way.text}</p>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="sambutan" aria-labelledby="sambutan-title">
+      <div class="container">
+        <div class="sambutan-grid">
+          <figure class="sambutan-photo">
+            <img
+              src={sambutan.photo}
+              width={sambutan.photoWidth}
+              height={sambutan.photoHeight}
+              alt={sambutan.photoAlt}
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>
+              <strong>{sambutan.name}</strong>
+              <span>{sambutan.role}</span>
+            </figcaption>
+          </figure>
+
+          <div class="sambutan-copy">
+            <h2 id="sambutan-title">{sambutan.title}</h2>
+            {sambutan.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+            <div class="sambutan-sign">
+              <p class="sambutan-name">{sambutan.name}</p>
+              <p class="sambutan-role">{sambutan.role}</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -236,6 +273,91 @@ const mosaicSizes = [
         </div>
       </div>
     </section>
+
+    <section class="section section--soft" id="artikel-terbaru" aria-labelledby="artikel-title">
+      <div class="container">
+        <div class="section-head section-head--row">
+          <div>
+            <p class="section-eyebrow">Latest Article</p>
+            <h2 id="artikel-title">Kabar dan artikel terbaru</h2>
+            <p>Kegiatan, pengumuman, dan tulisan pembinaan dari pengurus dan guru.</p>
+          </div>
+          <div class="carousel-nav" role="group" aria-label="Navigasi artikel">
+            <button class="carousel-btn" type="button" data-carousel-btn data-target="artikel-track" data-dir="-1" aria-label="Artikel sebelumnya">&larr;</button>
+            <button class="carousel-btn" type="button" data-carousel-btn data-target="artikel-track" data-dir="1" aria-label="Artikel berikutnya">&rarr;</button>
+          </div>
+        </div>
+
+        <div class="carousel" id="artikel-track" tabindex="0" aria-label="Daftar artikel terbaru">
+          {articles.map((article) => (
+            <article class="article-card">
+              <div class="article-card-body">
+                <div class="article-meta">
+                  <time datetime={article.date}>{formatDate(article.date)}</time>
+                  <span>{article.category}</span>
+                </div>
+                <h3>{article.title}</h3>
+                <p class="article-author">Oleh {article.author}</p>
+                <p class="article-excerpt">{article.excerpt}</p>
+                <a class="btn btn-solid article-more" href="#artikel-terbaru">Read More</a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="prestasi" aria-labelledby="prestasi-title">
+      <div class="container">
+        <div class="section-head section-head--row">
+          <div>
+            <p class="section-eyebrow">Gallery</p>
+            <h2 id="prestasi-title">Galeri Santri dan Guru Berprestasi</h2>
+            <p>Capaian santri dan guru yang kami syukuri bersama wali dan para donatur.</p>
+          </div>
+          <div class="carousel-actions">
+            <a class="btn btn-quiet" href="/galeri">View All</a>
+            <div class="carousel-nav" role="group" aria-label="Navigasi galeri prestasi">
+              <button class="carousel-btn" type="button" data-carousel-btn data-target="prestasi-track" data-dir="-1" aria-label="Prestasi sebelumnya">&larr;</button>
+              <button class="carousel-btn" type="button" data-carousel-btn data-target="prestasi-track" data-dir="1" aria-label="Prestasi berikutnya">&rarr;</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="carousel" id="prestasi-track" tabindex="0" aria-label="Galeri santri dan guru berprestasi">
+          {achievements.map((item) => (
+            <figure class="achieve-card">
+              <img
+                src={item.image}
+                width={item.width}
+                height={item.height}
+                alt={item.imageAlt}
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>
+                <span class="achieve-category">{item.category}</span>
+                <strong>{item.title}</strong>
+                <span>{item.detail}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <script>
+      document.querySelectorAll('[data-carousel-btn]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const track = document.getElementById(btn.getAttribute('data-target') || '');
+          if (!track) return;
+          const card = track.querySelector(':scope > *');
+          const gap = 32;
+          const step = card ? card.getBoundingClientRect().width + gap : 320;
+          track.scrollBy({ left: Number(btn.getAttribute('data-dir') || 1) * step, behavior: 'smooth' });
+        });
+      });
+    </script>
 
     <section class="section section--tight" aria-labelledby="psb-title">
       <div class="container">
