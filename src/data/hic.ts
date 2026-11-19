@@ -190,6 +190,138 @@ export const gallery: GalleryItem[] = [
   },
 ];
 
+/**
+ * PLACEHOLDER: teks sambutan, nama, jabatan, dan foto pengurus di bawah ini
+ * adalah contoh. Ganti dengan sambutan dan foto pengurus asli yayasan
+ * sebelum publikasi.
+ */
+export const sambutan = {
+  title: 'Sambutan Pengurus',
+  photo: '/images/sambutan-pengurus.jpg',
+  photoAlt: 'Foto pengurus Yayasan Hidayatul Ilmi Cendekia (placeholder)',
+  photoWidth: 768,
+  photoHeight: 1408,
+  name: 'Nama Pengurus',
+  role: 'Ketua Pengurus Yayasan Hidayatul Ilmi Cendekia',
+  paragraphs: [
+    'Assalamu\u2019alaikum warahmatullahi wabarakatuh. Selamat datang di website Yayasan Hidayatul Ilmi Cendekia, rumah bagi Rumah Qur\u2019an dan program HIC Berbagi.',
+    'Kami membina bacaan, hafalan, dan adab santri dalam halaqah kecil, sambil mendampingi keluarga dan menyalurkan bantuan untuk santri yang membutuhkan. Semoga website ini memudahkan Bapak dan Ibu mengenal program kami, mendaftarkan santri baru, dan ikut berbagi kebaikan.',
+    'Terima kasih atas kepercayaan dan dukungan yang diberikan. Wassalamu\u2019alaikum warahmatullahi wabarakatuh.',
+  ],
+};
+
+export interface Article {
+  date: string;
+  category: string;
+  title: string;
+  author: string;
+  excerpt: string;
+  image: string;
+  imageAlt: string;
+}
+
+/**
+ * PLACEHOLDER: artikel contoh untuk section Latest Article di beranda.
+ * Ganti dengan artikel asli yayasan. Tautan baca selengkapnya masih
+ * mengarah ke section ini sampai halaman artikel tersedia.
+ */
+export const articles: Article[] = [
+  {
+    date: '2026-11-10',
+    category: 'Kegiatan, Kabar Santri',
+    title: 'Munaqasyah Tahfizh Santri Rumah Qur\u2019an',
+    author: 'Pengurus',
+    excerpt:
+      'Santri mengikuti ujian hafalan di hadapan guru dan wali. Kegiatan ini menjadi cara kami menjaga hafalan lama sambil menumbuhkan keberanian santri.',
+    image: '/images/galeri-quran-800.jpg',
+    imageAlt: 'Anak memegang mushaf dan membaca',
+  },
+  {
+    date: '2026-10-28',
+    category: 'Kegiatan, HIC Berbagi',
+    title: 'Penyaluran Paket Pendidikan HIC Berbagi',
+    author: 'Pengurus',
+    excerpt:
+      'Paket alat tulis dan bantuan biaya pendidikan disalurkan kepada santri terdata. Penerima diverifikasi pengurus sebelum penyaluran.',
+    image: '/images/berbagi-paket-800.jpg',
+    imageAlt: 'Paket bantuan HIC Berbagi disiapkan',
+  },
+  {
+    date: '2026-10-14',
+    category: 'Artikel, Pembinaan',
+    title: 'Menjaga Murajaah di Rumah, Panduan Singkat untuk Wali',
+    author: 'Guru Rumah Qur\u2019an',
+    excerpt:
+      'Hafalan yang dijaga di rumah akan lebih kuat. Berikut cara sederhana mendampingi anak mengulang hafalan tanpa membuatnya tertekan.',
+    image: '/images/galeri-kelas-800.jpg',
+    imageAlt: 'Kelas tahsin dengan papan tulis',
+  },
+  {
+    date: '2026-09-30',
+    category: 'Kegiatan, Kajian Wali',
+    title: 'Kajian Wali Santri, Membaca Perkembangan Anak Bersama',
+    author: 'Pengurus',
+    excerpt:
+      'Wali santri berkumpul di ruang utama untuk mendengar perkembangan bacaan dan hafalan anak, lalu berdiskusi langsung dengan guru.',
+    image: '/images/galeri-taklim-01-800.jpg',
+    imageAlt: 'Taklim ba\u2019da maghrib di ruang utama',
+  },
+];
+
+export interface Achievement {
+  title: string;
+  category: string;
+  detail: string;
+  image: string;
+  imageAlt: string;
+  width: number;
+  height: number;
+}
+
+/**
+ * PLACEHOLDER: foto dan capaian contoh untuk Galeri Santri dan Guru
+ * Berprestasi (sumber foto contoh: Pinterest). Ganti dengan poster dan
+ * data prestasi asli santri dan guru sebelum publikasi.
+ */
+export const achievements: Achievement[] = [
+  {
+    title: 'Lulus Munaqasyah Tahfizh Juz 30',
+    category: 'Santri Berprestasi',
+    detail: 'Selamat dan sukses atas kelulusan ujian hafalan Juz 30.',
+    image: '/images/prestasi-santri-1.jpg',
+    imageAlt: 'Santri memeluk mushaf sambil tersenyum (foto placeholder)',
+    width: 800,
+    height: 859,
+  },
+  {
+    title: 'Tahsin Terbaik Semester Ini',
+    category: 'Santri Berprestasi',
+    detail: 'Bacaan paling lancar dan rapi pada evaluasi tahsin semester ini.',
+    image: '/images/prestasi-santri-2.jpg',
+    imageAlt: 'Santriwati memegang mushaf di dekat jendela (foto placeholder)',
+    width: 686,
+    height: 1220,
+  },
+  {
+    title: 'Hafalan Terbanyak Satu Semester',
+    category: 'Santri Berprestasi',
+    detail: 'Capaian hafalan terbanyak yang terjaga lewat murajaah rutin.',
+    image: '/images/prestasi-santri-3.jpg',
+    imageAlt: 'Santri memegang mushaf dengan latar masjid (foto placeholder)',
+    width: 600,
+    height: 600,
+  },
+  {
+    title: 'Guru Pembimbing Berprestasi',
+    category: 'Guru Berprestasi',
+    detail: 'Apresiasi untuk guru pembimbing halaqah dengan pendampingan terbaik.',
+    image: '/images/prestasi-guru-1.jpg',
+    imageAlt: 'Guru pembimbing Rumah Qur\u2019an (foto placeholder)',
+    width: 832,
+    height: 1248,
+  },
+];
+
 export const faq = [
   {
     q: 'Siapa yang bisa mendaftar PSB?',
