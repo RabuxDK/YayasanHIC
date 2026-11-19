@@ -1,71 +1,86 @@
 ---
 /**
- * Folder: src/layouts/
- * Description: Root HTML layout with SEO meta tags, OpenGraph, JSON-LD schema, and Tailwind CSS v4.
- * This file: Layout.astro
+ * Layout induk situs Yayasan Hidayatul Ilmi Cendekia.
+ * Memuat font, meta SEO, data terstruktur, dan gaya global.
  */
 
 import '../styles/global.css';
+import { site } from '../data/hic';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
   canonicalUrl?: string;
-  siteName?: string;
 }
 
 const {
-  title = 'Website Boilerplate | Solusi Bisnis & Profil Perusahaan',
-  description = 'Template website modern berbasis Astro, Tailwind CSS v4, dan React 19 terintegrasi dengan RabuxID Headless CMS.',
-  image = 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&auto=format&fit=crop&q=80',
-  canonicalUrl = Astro.url.href,
-  siteName = 'Brand Boilerplate',
+  title = `${site.name} | Rumah Qur\u2019an dan HIC Berbagi`,
+  description = site.description,
+  image = '/images/og-hic.jpg',
+  canonicalUrl = new URL(Astro.url.pathname, site.url).href,
 } = Astro.props;
+
+const imageUrl = new URL(image, site.url).href;
 
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'LocalBusiness',
-  'name': siteName,
-  'description': description,
-  'image': image,
-  'url': canonicalUrl,
+  '@type': 'NGO',
+  name: site.name,
+  alternateName: site.short,
+  description: site.description,
+  url: site.url,
+  logo: new URL('/images/logo-hic-320.png', site.url).href,
 };
 ---
 
 <!doctype html>
-<html lang="id" class="bg-slate-950 text-slate-100 scroll-smooth">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#28378f" />
 
-    {/* Primary SEO Meta Tags */}
     <title>{title}</title>
-    <meta name="title" content={title} />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" type="image/png" href="/images/logo-hic-160.png" />
 
-    {/* Open Graph / Facebook */}
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="id_ID" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
-    <meta property="og:site_name" content={siteName} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={imageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
 
-    {/* Twitter */}
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalUrl} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={image} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    />
 
-    {/* Structured Schema JSON-LD */}
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <style is:global>
+      html,
+      body {
+        overflow-x: clip;
+      }
+    </style>
   </head>
-  <body class="min-h-screen bg-slate-950 text-slate-100 antialiased selection:bg-emerald-500 selection:text-slate-950">
+  <body>
+    <a class="skip-link" href="#konten">Lewati ke konten</a>
     <slot />
   </body>
 </html>
+
+

@@ -1,491 +1,318 @@
 ---
 /**
- * Folder: src/pages/
- * Description: Main client landing page consuming live content from RabuxID CMS with SSG build support.
- * Uses clean boilerplate structure, dynamic CMS sections, and zero hardcoded brand specifics.
- * This file: index.astro
+ * Beranda: hero, program, tentang, galeri, PSB, donasi, dan tanya jawab.
  */
 
 import Layout from '../layouts/Layout.astro';
-import SectionHeader from '../components/SectionHeader.astro';
-import MaintenanceView from '../components/MaintenanceView.astro';
-import Footer from '../components/Footer.astro';
+import Header from '../components/hic/Header.astro';
+import Footer from '../components/hic/Footer.astro';
+import { DonationQuick } from '../components/islands/DonationQuick';
+import { site, programs, dayRhythm, ways, wali, gallery, faq, psb, donation } from '../data/hic';
 
-import { Navbar } from '../components/islands/Navbar';
-import { HeroCta } from '../components/islands/HeroCta';
-import { ContactForm } from '../components/islands/ContactForm';
-import { FaqAccordion } from '../components/islands/FaqAccordion';
-import { PricingCards } from '../components/islands/PricingCards';
-import { ProductsCatalog } from '../components/islands/ProductsCatalog';
+const strip = [gallery[0], gallery[1], gallery[2], gallery[3], gallery[4], gallery[7]];
 
-import { getCms, getField, getItems } from '../services/rabuxCms';
-import type { CmsProduct } from '../types';
-import {
-  Sparkles,
-  ShieldCheck,
-  Zap,
-  CheckCircle,
-  Award,
-  Truck,
-  Flame,
-  Coffee,
-  PackageCheck,
-  Clock,
-  Star,
-  Heart,
-  ArrowRight,
-} from 'lucide-react';
-
-// One fetch per build via rabuxCms; a failed fetch fails the build. Missing sections/fields become '' or [].
-const data = await getCms();
-const str = (v: unknown) => (v == null ? '' : String(v));
-const text = async (section: string, field: string) => str(await getField(section, field));
-
-const products: CmsProduct[] = data.products.map((p) => ({
-  id: p.id,
-  name: p.name,
-  description: p.description ?? undefined,
-  price: p.price ?? 0,
-  category: p.category,
-  image: p.image ?? undefined,
-  isAvailable: p.status === 'active',
-  stock: p.stock,
-}));
-const cms = { name: data.name, status: data.status, products };
-
-const hero = {
-  headline: await text('hero', 'headline'),
-  subheadline: await text('hero', 'subheadline'),
-  ctaText: await text('hero', 'cta_text'),
-  ctaLink: await text('hero', 'cta_link'),
-  badge: await text('hero', 'badge'),
-  heroImage: await text('hero', 'hero_image'),
-};
-const about = {
-  title: await text('about', 'title'),
-  story: await text('about', 'story'),
-  image: await text('about', 'image'),
-  mission: await text('about', 'mission'),
-};
-const contact = {
-  email: await text('contact', 'email'),
-  phone: await text('contact', 'phone'),
-  whatsapp: await text('contact', 'whatsapp'),
-  address: await text('contact', 'address'),
-  workingHours: await text('contact', 'working_hours'),
-};
-const benefits = (await getItems('benefits', 'items')).map((i) => ({
-  id: str(i.id),
-  title: str(i.title),
-  description: str(i.description),
-  icon: str(i.icon),
-}));
-const services = (await getItems('services', 'items')).map((i) => ({
-  id: str(i.id),
-  name: str(i.name),
-  description: str(i.description),
-  price: str(i.price),
-  featured: i.featured === true,
-}));
-const faq = {
-  title: await text('faq', 'title'),
-  subtitle: await text('faq', 'subtitle'),
-  items: (await getItems('faq', 'items')).map((i) => ({ question: str(i.question), answer: str(i.answer) })),
-};
-const pricing = {
-  title: await text('pricing', 'title'),
-  subtitle: await text('pricing', 'subtitle'),
-  items: (await getItems('pricing', 'items')).map((i) => ({
-    name: str(i.name),
-    price: str(i.price),
-    period: str(i.period),
-    description: str(i.description),
-    // Nested arrays inside a List_Item are stored as a newline-joined textarea.
-    features: str(i.features).split('\n').map((f) => f.trim()).filter(Boolean),
-    isPopular: i.is_popular === true,
-    ctaText: str(i.cta_text),
-  })),
-};
-const testimonials = (await getItems('testimonials', 'items')).map((i) => ({
-  id: str(i.id),
-  quote: str(i.quote),
-  author: str(i.author),
-  role: str(i.role),
-  avatar: str(i.avatar),
-}));
-
-// Map icon strings from CMS to Lucide icon components
-const iconMap: Record<string, any> = {
-  Sparkles,
-  ShieldCheck,
-  Zap,
-  CheckCircle,
-  Award,
-  Truck,
-  Flame,
-  Coffee,
-  PackageCheck,
-  Clock,
-  Star,
-  Heart,
-};
+const mosaicSizes = [
+  '(max-width: 60rem) 100vw, 50vw',
+  '(max-width: 40rem) 100vw, (max-width: 60rem) 50vw, 36vw',
+  '(max-width: 40rem) 100vw, (max-width: 60rem) 50vw, 28vw',
+  '(max-width: 40rem) 100vw, (max-width: 60rem) 50vw, 28vw',
+  '(max-width: 40rem) 100vw, (max-width: 60rem) 50vw, 28vw',
+  '(max-width: 60rem) 100vw, 84vw',
+];
 ---
 
-{cms.status === 'maintenance' ? (
-  <Layout title={`Pemeliharaan Sistem | ${cms.name}`} siteName={cms.name}>
-    <MaintenanceView siteName={cms.name} contact={contact} />
-  </Layout>
-) : (
-  <Layout
-    title={`${cms.name} | ${hero.headline || 'Solusi Bisnis & Layanan Berkualitas'}`}
-    description={hero.subheadline || 'Hadirkan produk dan layanan terbaik dengan standar mutu terpercaya untuk mendukung kesuksesan Anda.'}
-    siteName={cms.name}
-  >
-    {/* Accessible Navigation Bar */}
-    <Navbar
-      client:load
-      siteName={cms.name}
-      whatsapp={contact.whatsapp}
-      phone={contact.phone}
-    />
+<Layout>
+  <Header />
 
-    <main>
-      {/* 1. HERO SECTION */}
-      <section class="relative pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden bg-slate-950">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            {/* Text & CTAs */}
-            <div class="lg:col-span-7 space-y-6">
-              {hero.badge && (
-                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
-                  <Sparkles class="w-3.5 h-3.5" />
-                  <span>{hero.badge}</span>
-                </div>
-              )}
+  <main id="konten">
+    <section class="hero on-dark">
+      <div class="container stage-inner">
+        <div class="stage-copy">
+          <h1>Tempat anak tumbuh <span class="mark">bersama Al-Qur&rsquo;an</span></h1>
+          <p class="hero-lede">Pembinaan bacaan, hafalan, dan adab dalam lingkungan yang tenang.</p>
+          <div class="hero-actions">
+            <a class="btn btn-solid btn-lg" href="/psb">Daftar santri baru</a>
+            <a class="btn btn-quiet btn-lg" href="#program">Kenali program</a>
+          </div>
+          <p class="hero-note">Yayasan Hidayatul Ilmi Cendekia</p>
+        </div>
+        <figure class="hero-figure">
+          <img
+            src="/images/hero-mengaji-1400.jpg"
+            srcset="/images/hero-mengaji-800.jpg 800w, /images/hero-mengaji-1400.jpg 1280w"
+            sizes="(max-width: 60rem) 100vw, 44vw"
+            width="1280"
+            height="1600"
+            alt="Santri membaca Al-Qur'an di musholla"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </figure>
+      </div>
+    </section>
 
-              <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
-                {hero.headline || 'Solusi Terpercaya untuk Pertumbuhan Bisnis Anda'}
-              </h1>
+    <div class="day-wrap">
+      <div class="container">
+        <section class="day-strip" aria-labelledby="hari-title">
+          <h2 class="day-title" id="hari-title">Satu hari di Rumah Qur&rsquo;an</h2>
+          <div class="day-grid">
+            {dayRhythm.map((item) => (
+              <div class="day-item">
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
 
-              <p class="text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl">
-                {hero.subheadline || 'Menyediakan produk dan layanan unggulan dengan komitmen kepuasan dan kualitas terbaik.'}
-              </p>
-
-              <HeroCta
-                client:load
-                primaryText={hero.ctaText || 'Jelajahi Produk'}
-                primaryLink={hero.ctaLink || '#produk'}
-                whatsapp={contact.whatsapp}
-                siteName={cms.name}
+    <section class="section" id="tentang" aria-labelledby="tentang-title">
+      <div class="container">
+        <div class="about-grid">
+          <div class="photo-stack">
+            <figure class="photo-main">
+              <img
+                src="/images/berbagi-santri-1400.jpg"
+                srcset="/images/berbagi-santri-800.jpg 800w, /images/berbagi-santri-1400.jpg 1280w"
+                sizes="(max-width: 60rem) 100vw, 48vw"
+                width="1280"
+                height="720"
+                alt="Santri menerima bantuan pendidikan"
+                loading="lazy"
+                decoding="async"
               />
-            </div>
+            </figure>
+            <figure class="photo-second">
+              <img
+                src="/images/hero-belajar-800.jpg"
+                width="800"
+                height="533"
+                alt="Anak belajar membaca bersama guru"
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+          </div>
 
-            {/* Visual Hero Image */}
-            <div class="lg:col-span-5 relative">
-              <div class="relative rounded-3xl overflow-hidden border border-slate-800 bg-slate-900/60 shadow-2xl aspect-4/3 sm:aspect-5/4">
-                <img
-                  src={hero.heroImage || 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1000&auto=format&fit=crop&q=80'}
-                  alt={hero.headline || 'Hero image'}
-                  class="w-full h-full object-cover"
-                  loading="eager"
-                />
+          <div class="about-copy">
+            <h2 id="tentang-title">Tumbuh dari lingkungan belajar</h2>
+            <p>
+              HIC berawal dari halaqah kecil di musholla. Anak-anak datang selepas sekolah,
+              membawa mushaf.
+            </p>
+            <p>
+              Lalu bertambah: kelas tahsin, kajian wali, dan paket bantuan.
+            </p>
+            <div class="about-card">
+              <div class="about-card-row">
+                <h3>Visi</h3>
+                <p>Dekat dengan Al-Qur&rsquo;an, berakhlak baik.</p>
+              </div>
+              <div class="about-card-row">
+                <h3>Misi</h3>
+                <p>Membina bacaan, mendampingi keluarga, menyalurkan bantuan.</p>
               </div>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* 2. ABOUT US SECTION (#tentang) */}
-      <section id="tentang" class="py-20 sm:py-28 bg-slate-900/40 border-t border-slate-800/60">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Image */}
-            <div class="lg:col-span-5 order-2 lg:order-1">
-              <div class="rounded-3xl overflow-hidden border border-slate-800 bg-slate-900 shadow-xl aspect-4/3">
+        <div class="ways-grid">
+          {ways.map((way) => (
+            <div class="way">
+              <h3>{way.title}</h3>
+              <p>{way.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--soft" id="program" aria-labelledby="program-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="program-title">Dua program, satu arah</h2>
+          <p>
+            Rumah Qur&rsquo;an membina, HIC Berbagi menopang. Keduanya berjalan bersama.
+          </p>
+        </div>
+
+        <div class="program-list">
+          {programs.map((program, index) => (
+            <article class:list={['program-card', index % 2 === 1 && 'program-card--flip']}>
+              <figure class="program-card-media">
                 <img
-                  src={about.image || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format&fit=crop&q=80'}
-                  alt={about.title || 'Profil perusahaan'}
-                  class="w-full h-full object-cover"
+                  src={program.image}
+                  width="640"
+                  height="640"
+                  alt={program.imageAlt}
                   loading="lazy"
+                  decoding="async"
                 />
-              </div>
-            </div>
-
-            {/* Content */}
-            <div class="lg:col-span-7 order-1 lg:order-2 space-y-6">
-              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
-                <span>Profil & Komitmen</span>
-              </div>
-
-              <h2 class="text-2xl sm:text-4xl font-bold text-white tracking-tight">
-                {about.title || 'Membangun Kualitas dengan Integritas'}
-              </h2>
-
-              <p class="text-sm sm:text-base text-slate-300 leading-relaxed">
-                {about.story || 'Kami berdedikasi memberikan hasil terbaik bagi setiap pelanggan melalui transparansi dan pelayanan profesional.'}
-              </p>
-
-              {about.mission && (
-                <div class="p-5 rounded-2xl border border-slate-800 bg-slate-950/60 space-y-2">
-                  <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-400">
-                    Visi & Misi
-                  </h4>
-                  <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                    {about.mission}
-                  </p>
+              </figure>
+              <div class="program-card-body">
+                <p class="program-tagline">{program.tagline}</p>
+                <h3>{program.name}</h3>
+                <p class="program-summary">{program.summary}</p>
+                <ul class="program-points">
+                  {program.points.map((point) => (
+                    <li>
+                      <strong>{point.title}.</strong> {point.text}
+                    </li>
+                  ))}
+                </ul>
+                <p class="program-meta">
+                  Untuk {program.audience} {program.note}
+                </p>
+                <div class="program-actions">
+                  <a class="btn btn-solid" href={program.action.href}>{program.action.label}</a>
+                  <a class="btn btn-quiet" href={program.secondary.href}>{program.secondary.label}</a>
                 </div>
-              )}
-            </div>
-          </div>
+              </div>
+            </article>
+          ))}
         </div>
-      </section>
+      </div>
+    </section>
 
-      {/* 3. BENEFITS SECTION (#keunggulan) */}
-      {benefits.length > 0 && (
-        <section id="keunggulan" class="py-20 sm:py-28 bg-slate-950 border-t border-slate-800/60">
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader
-              badge="Keunggulan"
-              title="Mengapa Memilih Kami"
-              subtitle="Komitmen kami dalam menghadirkan standar mutu dan pelayanan terbaik untuk kepuasan Anda."
-            />
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {benefits.map((item, idx) => {
-                const IconComponent = item.icon && iconMap[item.icon] ? iconMap[item.icon] : Sparkles;
-
-                return (
-                  <div
-                    key={item.id || idx}
-                    class="rounded-3xl border border-slate-800 bg-slate-900/40 p-6 sm:p-7 space-y-4 hover:border-slate-700 transition-all duration-300"
-                  >
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                      <IconComponent class="w-6 h-6" />
-                    </div>
-
-                    <h3 class="text-base sm:text-lg font-bold text-white">
-                      {item.title}
-                    </h3>
-
-                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                      {item.description}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
+    <section class="section" aria-labelledby="galeri-title">
+      <div class="container">
+        <div class="section-head section-head--row">
+          <div>
+            <h2 id="galeri-title">Dokumentasi kegiatan</h2>
+            <p>Halaqah pagi, setoran hafalan, kelas tahsin, dan paket bantuan.</p>
           </div>
-        </section>
-      )}
-
-      {/* 4. SERVICES SECTION (#layanan) */}
-      {services.length > 0 && (
-        <section id="layanan" class="py-20 sm:py-28 bg-slate-900/30 border-t border-slate-800/60">
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader
-              badge="Layanan & Solusi"
-              title="Solusi Profesional Sesuai Kebutuhan"
-              subtitle="Ragam pilihan paket dan layanan yang dirancang secara fleksibel untuk mendukung efisiensi operasional Anda."
-            />
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {services.map((service, idx) => (
-                <div
-                  key={service.id || idx}
-                  class={`rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 ${
-                    service.featured
-                      ? 'border-2 border-emerald-500 bg-slate-900/90 shadow-xl'
-                      : 'border border-slate-800 bg-slate-900/40 hover:border-slate-700'
-                  }`}
-                >
-                  <div class="space-y-4">
-                    {service.featured && (
-                      <span class="inline-flex px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 font-semibold text-[11px] uppercase tracking-wider">
-                        Program Utama
-                      </span>
-                    )}
-
-                    <h3 class="text-xl font-bold text-white">
-                      {service.name}
-                    </h3>
-
-                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                      {service.description}
-                    </p>
-                  </div>
-
-                  <div class="mt-8 pt-4 border-t border-slate-800/80 flex items-center justify-between">
-                    <span class="text-xs sm:text-sm font-semibold text-emerald-400">
-                      {service.price || 'Hubungi Kami'}
-                    </span>
-
-                    <a
-                      href="#kontak"
-                      class="text-xs font-semibold text-slate-300 hover:text-white flex items-center gap-1 min-h-[44px]"
-                    >
-                      <span>Pelajari</span>
-                      <ArrowRight class="w-3.5 h-3.5" />
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 5. PRODUCTS CATALOG SECTION (#produk) */}
-      <section id="produk" class="py-20 sm:py-28 bg-slate-950 border-t border-slate-800/60">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="Katalog Produk"
-            title="Pilihan Produk & Penawaran Unggulan"
-            subtitle="Jelajahi ragam produk berkualitas yang dirancang untuk mendukung operasional dan kebutuhan Anda."
-          />
-
-          <ProductsCatalog
-            client:visible
-            products={cms.products}
-            whatsapp={contact.whatsapp}
-            siteName={cms.name}
-          />
+          <a class="btn btn-quiet" href="/galeri">Lihat semua galeri</a>
         </div>
-      </section>
 
-      {/* 6. PRICING SECTION (Optional from CMS) */}
-      {pricing.items && pricing.items.length > 0 && (
-        <section id="langganan" class="py-20 sm:py-28 bg-slate-900/40 border-t border-slate-800/60">
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader
-              badge="Paket Berlangganan"
-              title={pricing.title || 'Pilihan Paket Layanan'}
-              subtitle={pricing.subtitle || 'Paket transparan dan fleksibel yang dirancang untuk mendampingi perkembangan usaha Anda.'}
-            />
-
-            <PricingCards
-              client:visible
-              plans={pricing.items}
-              whatsapp={contact.whatsapp}
-              siteName={cms.name}
-            />
-          </div>
-        </section>
-      )}
-
-      {/* 7. TESTIMONIALS SECTION (Arbitrary Custom Section Example) */}
-      {Array.isArray(testimonials) && testimonials.length > 0 && (
-        <section id="testimoni" class="py-20 sm:py-28 bg-slate-950 border-t border-slate-800/60">
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader
-              badge="Testimoni"
-              title="Apa Kata Pelanggan Kami"
-              subtitle="Pengalaman langsung dari para mitra dan klien yang telah mempercayakan kebutuhannya kepada kami."
-            />
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-              {testimonials.map((t: any, idx: number) => (
-                <div
-                  key={t.id || idx}
-                  class="rounded-3xl border border-slate-800 bg-slate-900/40 p-6 sm:p-8 space-y-4"
-                >
-                  <p class="text-sm text-slate-300 italic leading-relaxed">
-                    &ldquo;{t.quote}&rdquo;
-                  </p>
-                  <div class="flex items-center gap-3 pt-2 border-t border-slate-800/80">
-                    {t.avatar && (
-                      <img
-                        src={t.avatar}
-                        alt={t.author || 'Avatar'}
-                        class="w-10 h-10 rounded-full object-cover border border-slate-700"
-                        loading="lazy"
-                      />
-                    )}
-                    <div>
-                      <h4 class="text-sm font-bold text-white">{t.author}</h4>
-                      {t.role && <p class="text-xs text-slate-400">{t.role}</p>}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 8. FAQ SECTION (#faq) */}
-      {faq.items && faq.items.length > 0 && (
-        <section id="faq" class="py-20 sm:py-28 bg-slate-900/30 border-t border-slate-800/60">
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHeader
-              badge="Tanya Jawab"
-              title={faq.title || 'Pertanyaan yang Sering Diajukan'}
-              subtitle={faq.subtitle || 'Jawaban lengkap atas hal-hal yang sering ditanyakan seputar produk dan mekanisme kerja sama.'}
-            />
-
-            <FaqAccordion
-              client:visible
-              items={faq.items}
-            />
-          </div>
-        </section>
-      )}
-
-      {/* 9. CONTACT SECTION (#kontak) */}
-      <section id="kontak" class="py-20 sm:py-28 bg-slate-950 border-t border-slate-800/60">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-            {/* Contact Info Text */}
-            <div class="lg:col-span-5 space-y-6">
-              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
-                <span>Hubungi Kami</span>
-              </div>
-
-              <h2 class="text-2xl sm:text-4xl font-bold text-white tracking-tight">
-                Konsultasikan Kebutuhan Anda
-              </h2>
-
-              <p class="text-sm sm:text-base text-slate-300 leading-relaxed">
-                Kami siap membantu menjawab pertanyaan Anda, memberikan rekomendasi produk yang tepat, serta mendiskusikan peluang kerja sama terbaik.
-              </p>
-
-              <div class="pt-4 space-y-3 text-xs sm:text-sm text-slate-300">
-                {contact.address && (
-                  <p><strong class="text-white">Alamat:</strong> {contact.address}</p>
-                )}
-                {contact.whatsapp && (
-                  <p><strong class="text-white">WhatsApp:</strong> {contact.whatsapp}</p>
-                )}
-                {contact.phone && (
-                  <p><strong class="text-white">Telepon:</strong> {contact.phone}</p>
-                )}
-                {contact.email && (
-                  <p><strong class="text-white">Email:</strong> {contact.email}</p>
-                )}
-                {contact.workingHours && (
-                  <p><strong class="text-white">Jam Operasional:</strong> {contact.workingHours}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Contact Form Island */}
-            <div class="lg:col-span-7 rounded-3xl border border-slate-800 bg-slate-900/70 p-6 sm:p-10 shadow-xl">
-              <ContactForm
-                client:visible
-                whatsapp={contact.whatsapp}
-                recipientEmail={contact.email}
-                siteName={cms.name}
+        <div class="gallery-mosaic">
+          {strip.map((item, index) => (
+            <figure class="gallery-mosaic-item">
+              <img
+                src={item.src}
+                srcset={item.srcset}
+                sizes={mosaicSizes[index]}
+                width={item.width}
+                height={item.height}
+                alt={item.alt}
+                loading="lazy"
+                decoding="async"
               />
+              <figcaption>{item.caption}</figcaption>
+            </figure>
+          ))}
+        </div>
+
+        <div class="wali-band on-dark">
+          <div class="wali-band-copy">
+            <h2 id="wali-title">Bersama wali santri</h2>
+            <p class="wali-band-lede">
+              Orang tua ikut menjaga perjalanan belajar anak, bukan hanya menunggu hasil.
+            </p>
+            <ul class="wali-band-list">
+              {wali.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+            <div class="wali-band-actions">
+              <a class="btn btn-solid" href="/kontak">Tanya sekretariat</a>
+              <a class="btn btn-quiet" href="/psb">Daftar santri baru</a>
             </div>
           </div>
+          <figure class="wali-band-media">
+            <img
+              src="/images/galeri-taklim-01-1400.jpg"
+              srcset="/images/galeri-taklim-01-800.jpg 800w, /images/galeri-taklim-01-1400.jpg 1280w"
+              sizes="(max-width: 60rem) 100vw, 48vw"
+              width="1280"
+              height="853"
+              alt="Taklim ba'da maghrib di ruang utama"
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>Taklim ba&rsquo;da maghrib di ruang utama</figcaption>
+          </figure>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
 
-    {/* Accessible Site Footer */}
-    <Footer
-      siteName={cms.name}
-      contact={contact}
-      story={about.story}
-    />
-  </Layout>
-)}
+    <section class="section section--tight" aria-labelledby="psb-title">
+      <div class="container">
+        <div class="band on-dark">
+          <div class="band-grid">
+            <div>
+              <h2 id="psb-title">Penerimaan santri baru</h2>
+              <p>Empat langkah, dari formulir sampai wawancara.</p>
+              <div class="band-actions">
+                <a class="btn btn-solid btn-lg" href="/psb">Mulai pendaftaran</a>
+              </div>
+            </div>
+            <ol class="steps">
+              <li>
+                <div>
+                  <h3>Isi formulir</h3>
+                  <p>Data santri dan wali, dikirim lewat WhatsApp.</p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h3>Verifikasi</h3>
+                  <p>Admin memeriksa kelengkapan dan menghubungi wali.</p>
+                </div>
+              </li>
+              <li>
+                <div>
+                  <h3>Wawancara</h3>
+                  <p>Pertemuan singkat untuk mengenal santri.</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="donasi-title">
+      <div class="container">
+        <div class="band on-dark donate-band">
+          <h2 id="donasi-title">Dukung HIC Berbagi</h2>
+          <p>Pilih nominal, kami kirim instruksi pembayaran lewat WhatsApp.</p>
+          <DonationQuick client:visible amounts={donation.amounts} />
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--soft" aria-labelledby="faq-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="faq-title">Pertanyaan yang sering diajukan</h2>
+        </div>
+        <div class="faq-grid">
+          <figure class="faq-figure">
+            <img
+              src="/images/galeri-kajian-1400.jpg"
+              srcset="/images/galeri-kajian-800.jpg 800w, /images/galeri-kajian-1400.jpg 1280w"
+              sizes="(max-width: 60rem) 100vw, 34vw"
+              width="1280"
+              height="854"
+              alt="Kajian bersama wali santri"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+          <div class="faq-list">
+            {faq.map((item) => (
+              <details class="faq-item">
+                <summary>{item.q}</summary>
+                <p>{item.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>

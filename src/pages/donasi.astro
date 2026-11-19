@@ -1,0 +1,86 @@
+---
+/**
+ * Donasi: formulir konfirmasi donasi untuk program HIC Berbagi.
+ */
+
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/hic/Header.astro';
+import Footer from '../components/hic/Footer.astro';
+import { DonationForm } from '../components/islands/DonationForm';
+import { site, donation } from '../data/hic';
+---
+
+<Layout
+  title={`Donasi | ${site.name}`}
+  description="Konfirmasi donasi untuk Rumah Qur'an dan HIC Berbagi. Instruksi pembayaran dikirim lewat WhatsApp."
+>
+  <Header />
+
+  <main id="konten">
+    <section class="page-hero on-dark">
+      <div class="container">
+        <div>
+          <h1>Donasi untuk HIC Berbagi</h1>
+          <p>Konfirmasi donasi, lalu admin mengirim instruksi pembayaran.</p>
+        </div>
+        <figure>
+          <img
+            src="/images/berbagi-santri-1400.jpg"
+            srcset="/images/berbagi-santri-800.jpg 800w, /images/berbagi-santri-1400.jpg 1280w"
+            sizes="(max-width: 60rem) 100vw, 40vw"
+            width="1280"
+            height="720"
+            alt="Santri menerima bantuan pendidikan"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </figure>
+      </div>
+    </section>
+
+    <section class="section section--soft" aria-labelledby="form-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="form-title">Formulir konfirmasi</h2>
+          <p>Pilih program, nominal, dan metode pembayaran.</p>
+        </div>
+
+        <div class="form-layout">
+          <DonationForm
+            client:load
+            waNumber={site.contact.waNumber}
+            programs={donation.programs}
+            amounts={donation.amounts}
+            methods={donation.methods}
+          />
+
+          <aside class="form-aside">
+            <div class="contact-block">
+              <h3>Ke mana donasi pergi</h3>
+              <ul class="aside-list">
+                {donation.programs.map((item) => (
+                  <li>
+                    <strong>{item.label}</strong>
+                    <span>{item.note}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div class="contact-block">
+              <h3>Konfirmasi manual</h3>
+              <p>
+                Instruksi pembayaran dikirim admin lewat WhatsApp. Halaman ini tidak memproses
+                pembayaran.
+              </p>
+              <a class="btn btn-quiet" href="/kontak">Hubungi sekretariat</a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>

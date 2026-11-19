@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://client-domain.com/sitemap-index.xml
+Sitemap: https://hic.rabux.id/sitemap-index.xml

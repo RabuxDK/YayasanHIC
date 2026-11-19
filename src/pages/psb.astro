@@ -1,0 +1,96 @@
+---
+/**
+ * PSB: formulir penerimaan santri baru dalam empat langkah.
+ */
+
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/hic/Header.astro';
+import Footer from '../components/hic/Footer.astro';
+import { PsbForm } from '../components/islands/PsbForm';
+import { site, psb } from '../data/hic';
+
+const waHref = `https://wa.me/${site.contact.waNumber}?text=${encodeURIComponent(
+  'Assalamualaikum, saya ingin bertanya tentang penerimaan santri baru.',
+)}`;
+---
+
+<Layout
+  title={`Penerimaan Santri Baru | ${site.name}`}
+  description="Formulir penerimaan santri baru Rumah Qur'an HIC: data santri, data wali, pilihan program, dan konfirmasi."
+>
+  <Header />
+
+  <main id="konten">
+    <section class="page-hero on-dark">
+      <div class="container">
+        <div>
+          <h1>Penerimaan santri baru</h1>
+          <p>Empat langkah, dari data santri sampai konfirmasi.</p>
+        </div>
+        <figure>
+          <img
+            src="/images/tentang-santri-1400.jpg"
+            srcset="/images/tentang-santri-800.jpg 800w, /images/tentang-santri-1400.jpg 1280w"
+            sizes="(max-width: 60rem) 100vw, 40vw"
+            width="1280"
+            height="853"
+            alt="Santri belajar bersama pendamping"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </figure>
+      </div>
+    </section>
+
+    <section class="section section--soft" aria-labelledby="form-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="form-title">Formulir pendaftaran</h2>
+          <p>Isi data dengan tenang. Draf tersimpan di perangkat ini.</p>
+        </div>
+
+        <div class="form-layout">
+          <PsbForm
+            client:load
+            waNumber={site.contact.waNumber}
+            steps={psb.steps}
+            levels={psb.levels}
+            schedules={psb.schedules}
+            relations={psb.relations}
+          />
+
+          <aside class="form-aside">
+            <div class="contact-block">
+              <h3>Yang perlu disiapkan</h3>
+              <ul class="aside-list">
+                <li>
+                  <strong>Data santri</strong>
+                  <span>Nama lengkap, tanggal lahir, dan asal sekolah.</span>
+                </li>
+                <li>
+                  <strong>Nomor WhatsApp aktif</strong>
+                  <span>Untuk verifikasi dan jadwal wawancara.</span>
+                </li>
+                <li>
+                  <strong>Kesediaan wawancara</strong>
+                  <span>Pertemuan singkat bersama wali.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="contact-block">
+              <h3>Butuh bantuan?</h3>
+              <p>Hubungi sekretariat lewat WhatsApp.</p>
+              <a class="btn btn-quiet" href={waHref} target="_blank" rel="noopener noreferrer">
+                Tanya lewat WhatsApp
+              </a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>

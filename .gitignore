@@ -18,3 +18,9 @@ pnpm-debug.log*
 # System Files
 .DS_Store
 Thumbs.db
+
+# Hallmark local run artifacts
+.hallmark/
+
+# Local asset dump (duplicate of public/)
+static/

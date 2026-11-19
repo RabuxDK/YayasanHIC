@@ -1,0 +1,94 @@
+---
+/**
+ * Kontak: sekretariat, donasi, dan kunjungan.
+ */
+
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/hic/Header.astro';
+import Footer from '../components/hic/Footer.astro';
+import { site } from '../data/hic';
+
+const waHref = `https://wa.me/${site.contact.waNumber}?text=${encodeURIComponent(
+  'Assalamualaikum, saya ingin bertanya tentang Yayasan Hidayatul Ilmi Cendekia.',
+)}`;
+---
+
+<Layout
+  title={`Kontak | ${site.name}`}
+  description="Alamat sekretariat, WhatsApp, email, dan jam layanan Yayasan Hidayatul Ilmi Cendekia."
+>
+  <Header />
+
+  <main id="konten">
+    <section class="page-hero on-dark">
+      <div class="container">
+        <div>
+          <h1>Kontak dan kunjungan</h1>
+          <p>Sekretariat terbuka Senin sampai Sabtu, 08.00 sampai 16.00.</p>
+        </div>
+        <figure>
+          <img
+            src="/images/galeri-taklim-01-1400.jpg"
+            srcset="/images/galeri-taklim-01-800.jpg 800w, /images/galeri-taklim-01-1400.jpg 1280w"
+            sizes="(max-width: 60rem) 100vw, 40vw"
+            width="1280"
+            height="853"
+            alt="Taklim ba'da maghrib di ruang utama"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="kontak-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="kontak-title">Hubungi sekretariat</h2>
+          <p>Kami membalas pada jam layanan. Untuk kunjungan, hubungi dulu.</p>
+        </div>
+
+        <div class="contact-grid">
+          <div class="contact-block">
+            <h3>Sekretariat</h3>
+            <ul class="contact-list">
+              <li>
+                <span class="contact-key">Alamat</span>
+                <span>{site.contact.address}</span>
+              </li>
+              <li>
+                <span class="contact-key">WhatsApp</span>
+                <a href={waHref} target="_blank" rel="noopener noreferrer">{site.contact.whatsapp}</a>
+              </li>
+              <li>
+                <span class="contact-key">Telepon</span>
+                <a href={`tel:${site.contact.phone.replace(/[^\d+]/g, '')}`}>{site.contact.phone}</a>
+              </li>
+              <li>
+                <span class="contact-key">Email</span>
+                <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+              </li>
+              <li>
+                <span class="contact-key">Jam layanan</span>
+                <span>{site.contact.hours}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="contact-block">
+            <h3>Pendaftaran dan donasi</h3>
+            <p>Dua layanan yang paling sering ditanyakan.</p>
+            <div class="band-actions">
+              <a class="btn btn-solid" href="/psb">Daftar santri baru</a>
+              <a class="btn btn-quiet" href="/donasi">Konfirmasi donasi</a>
+            </div>
+            <p>Instruksi pembayaran dikirim admin lewat WhatsApp.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>

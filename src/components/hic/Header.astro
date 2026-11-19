@@ -1,0 +1,73 @@
+---
+/**
+ * Header situs: wordmark, navigasi utama, dan satu aksi utama.
+ */
+
+import { site } from '../../data/hic';
+
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => {
+  if (href.includes('#')) return false;
+  const base = href || '/';
+  return base === '/' ? path === '/' : path === base || path.startsWith(`${base}/`);
+};
+---
+
+<header class="site-header" id="atas">
+  <div class="container header-bar">
+    <a class="brand" href="/">
+      <img src="/images/logo-hic-320.png" width="40" height="40" alt="" />
+      <span class="brand-text">
+        <span class="brand-name">Hidayatul Ilmi Cendekia</span>
+        <span class="brand-sub">Yayasan</span>
+      </span>
+    </a>
+
+    <nav class="site-nav" id="navigasi" aria-label="Navigasi utama">
+      <ul class="nav-list">
+        {site.nav.map((item) => (
+          <li>
+            <a class="nav-link" href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-solid" href="/psb">Daftar PSB</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navigasi">
+        <span class="visually-hidden">Buka menu</span>
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+          <path d="M3 5h14M3 10h14M3 15h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('.site-header');
+  const toggle = header?.querySelector<HTMLButtonElement>('.nav-toggle');
+
+  if (header && toggle) {
+    const setOpen = (open: boolean) => {
+      header.toggleAttribute('data-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+    };
+
+    toggle.addEventListener('click', () => setOpen(!header.hasAttribute('data-open')));
+
+    header.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && header.hasAttribute('data-open')) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    header.querySelectorAll<HTMLAnchorElement>('.nav-link').forEach((link) => {
+      link.addEventListener('click', () => setOpen(false));
+    });
+  }
+</script>

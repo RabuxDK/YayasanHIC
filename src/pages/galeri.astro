@@ -1,0 +1,120 @@
+---
+/**
+ * Galeri: dokumentasi kegiatan Rumah Qur'an dan HIC Berbagi.
+ */
+
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/hic/Header.astro';
+import Footer from '../components/hic/Footer.astro';
+import { site, gallery } from '../data/hic';
+
+const belajar = gallery.slice(0, 4);
+const bersama = gallery.slice(4);
+---
+
+<Layout
+  title={`Galeri | ${site.name}`}
+  description="Dokumentasi halaqah, kajian, dan penyaluran bantuan Yayasan Hidayatul Ilmi Cendekia."
+>
+  <Header />
+
+  <main id="konten">
+    <section class="page-hero on-dark">
+      <div class="container">
+        <div>
+          <h1>Galeri kegiatan</h1>
+          <p>Halaqah, kajian, dan penyaluran bantuan yang kami rawat bersama.</p>
+        </div>
+        <figure>
+          <img
+            src="/images/galeri-musholla-1400.jpg"
+            srcset="/images/galeri-musholla-800.jpg 800w, /images/galeri-musholla-1400.jpg 1280w"
+            sizes="(max-width: 60rem) 100vw, 40vw"
+            width="1280"
+            height="960"
+            alt="Santri duduk melingkar di musholla"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="belajar-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="belajar-title">Belajar dan mengaji</h2>
+          <p>Halaqah, setoran hafalan, kelas tahsin, dan pendampingan belajar.</p>
+        </div>
+
+        <div class="gallery-thumbs">
+          {belajar.map((item) => (
+            <figure>
+              <img
+                src={item.src}
+                srcset={item.srcset}
+                sizes="(max-width: 40rem) 100vw, (max-width: 60rem) 50vw, 25vw"
+                width={item.width}
+                height={item.height}
+                alt={item.alt}
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>{item.caption}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--soft" aria-labelledby="bersama-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="bersama-title">Kebersamaan dan berbagi</h2>
+          <p>Kajian wali santri, taklim, murajaah malam, dan paket bantuan.</p>
+        </div>
+
+        <div class="gallery-thumbs">
+          {bersama.map((item) => (
+            <figure>
+              <img
+                src={item.src}
+                srcset={item.srcset}
+                sizes="(max-width: 40rem) 100vw, (max-width: 60rem) 50vw, 25vw"
+                width={item.width}
+                height={item.height}
+                alt={item.alt}
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>{item.caption}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--tight" aria-labelledby="kunjung-title">
+      <div class="container">
+        <div class="band on-dark">
+          <div class="band-grid">
+            <div>
+              <h2 id="kunjung-title">Melihat langsung</h2>
+              <p>
+                Kunjungan singkat bisa diatur dengan sekretariat. Hubungi dulu agar ada yang
+                mendampingi.
+              </p>
+            </div>
+            <div class="band-actions">
+              <a class="btn btn-solid btn-lg" href="/kontak">Hubungi sekretariat</a>
+              <a class="btn btn-quiet btn-lg" href="/#program">Lihat program</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
