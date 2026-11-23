@@ -1,11 +1,14 @@
 ---
 /**
  * Layout induk situs Yayasan Hidayatul Ilmi Cendekia.
- * Memuat font, meta SEO, data terstruktur, dan gaya global.
+ * Memuat font, meta SEO, data terstruktur, gaya global, dan layar pemeliharaan CMS.
  */
 
 import '../styles/global.css';
-import { site } from '../data/hic';
+import HicMaintenance from '../components/hic/HicMaintenance.astro';
+import { getHicContent } from '../services/hicCms';
+
+const { site, status } = await getHicContent();
 
 interface Props {
   title?: string;
@@ -15,13 +18,15 @@ interface Props {
 }
 
 const {
-  title = `${site.name} | Rumah Qur\u2019an dan HIC Berbagi`,
+  title = `${site.name} | Rumah Qur\u2019an dan Sahabat HIC`,
   description = site.description,
-  image = '/images/og-hic.jpg',
+  image = site.ogImage,
   canonicalUrl = new URL(Astro.url.pathname, site.url).href,
 } = Astro.props;
 
 const imageUrl = new URL(image, site.url).href;
+const logoUrl = new URL(site.logo, site.url).href;
+const isMaintenance = status === 'maintenance';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -30,7 +35,14 @@ const jsonLd = {
   alternateName: site.short,
   description: site.description,
   url: site.url,
-  logo: new URL('/images/logo-hic-320.png', site.url).href,
+  telephone: `+${site.contact.waNumber}`,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.contact.address,
+    addressLocality: site.contact.addressShort,
+    addressCountry: 'ID',
+  },
+  logo: logoUrl,
 };
 ---
 
@@ -42,7 +54,7 @@ const jsonLd = {
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#28378f" />
 
-    <title>{title}</title>
+    <title>{isMaintenance ? `Pemeliharaan | ${site.name}` : title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" type="image/png" href="/images/logo-hic-160.png" />
@@ -79,8 +91,6 @@ const jsonLd = {
   </head>
   <body>
     <a class="skip-link" href="#konten">Lewati ke konten</a>
-    <slot />
+    {isMaintenance ? <HicMaintenance site={site} /> : <slot />}
   </body>
 </html>
-
-

@@ -1,20 +1,60 @@
 ---
 /**
- * Galeri: dokumentasi kegiatan Rumah Qur'an dan HIC Berbagi.
+ * Galeri: arsip editorial dokumentasi kegiatan Rumah Qur'an HIC, Sahabat HIC, dan prestasi.
  */
 
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/hic/Header.astro';
 import Footer from '../components/hic/Footer.astro';
-import { site, gallery } from '../data/hic';
+import { GalleryShowcase, type ShowcaseItem } from '../components/islands/GalleryShowcase';
+import { getHicContent } from '../services/hicCms';
+import '../styles/galeri.css';
 
-const belajar = gallery.slice(0, 4);
-const bersama = gallery.slice(4);
+const { site, galleryPage, gallery, achievements } = await getHicContent();
+const { heroTitle } = galleryPage;
+
+const galleryItems: ShowcaseItem[] = gallery.map((item, idx) => ({
+  id: `kegiatan-${idx + 1}`,
+  src: item.src,
+  highResSrc: item.highResSrc,
+  srcset: item.srcset,
+  alt: item.alt,
+  title: item.caption,
+  category: item.category,
+  sublabel: item.category,
+  detail: item.detail,
+  width: item.width,
+  height: item.height,
+  orientation: item.orientation,
+}));
+
+const achievementItems: ShowcaseItem[] = achievements.map((item, idx) => ({
+  id: `prestasi-${idx + 1}`,
+  src: item.image,
+  highResSrc: item.image,
+  alt: item.imageAlt,
+  title: item.title,
+  category: 'Prestasi',
+  sublabel: item.isPlaceholder ? `${item.category} (foto placeholder)` : item.category,
+  detail: item.isPlaceholder
+    ? `${item.detail} Dokumentasi saat ini memakai foto placeholder.`
+    : item.detail,
+  width: item.width,
+  height: item.height,
+  isPlaceholder: item.isPlaceholder,
+  orientation: item.height > item.width ? 'portrait' : 'square',
+}));
+
+const showcaseItems: ShowcaseItem[] = [...galleryItems, ...achievementItems];
+
+const waVisitHref = `https://wa.me/${site.contact.waNumber}?text=${encodeURIComponent(
+  `Assalamualaikum ${site.name}, saya ingin menjadwalkan kunjungan ke sekretariat ${site.contact.addressShort}.`,
+)}`;
 ---
 
 <Layout
   title={`Galeri | ${site.name}`}
-  description="Dokumentasi halaqah, kajian, dan penyaluran bantuan Yayasan Hidayatul Ilmi Cendekia."
+  description="Dokumentasi pembinaan Al-Qur'an, kajian wali santri, penyaluran bantuan Sahabat HIC, dan prestasi santri."
 >
   <Header />
 
@@ -22,17 +62,20 @@ const bersama = gallery.slice(4);
     <section class="page-hero on-dark">
       <div class="container">
         <div>
-          <h1>Galeri kegiatan</h1>
-          <p>Halaqah, kajian, dan penyaluran bantuan yang kami rawat bersama.</p>
+          <h1>{heroTitle}</h1>
+          <p>{galleryPage.heroSubtitle}</p>
+          <div class="page-hero-actions">
+            <a class="btn btn-solid btn-lg" href="#arsip-galeri">Lihat dokumentasi</a>
+          </div>
         </div>
         <figure>
           <img
-            src="/images/galeri-musholla-1400.jpg"
-            srcset="/images/galeri-musholla-800.jpg 800w, /images/galeri-musholla-1400.jpg 1280w"
-            sizes="(max-width: 60rem) 100vw, 40vw"
+            src={galleryPage.heroImage}
+            srcset={galleryPage.heroImageSrcset}
+            sizes="(max-width: 60rem) 100vw, 42vw"
             width="1280"
             height="960"
-            alt="Santri duduk melingkar di musholla"
+            alt={galleryPage.heroImageAlt}
             loading="eager"
             fetchpriority="high"
             decoding="async"
@@ -41,74 +84,70 @@ const bersama = gallery.slice(4);
       </div>
     </section>
 
-    <section class="section" aria-labelledby="belajar-title">
+    <section class="section galeri-showcase-sec" id="arsip-galeri" aria-labelledby="arsip-title">
       <div class="container">
         <div class="section-head">
-          <h2 id="belajar-title">Belajar dan mengaji</h2>
-          <p>Halaqah, setoran hafalan, kelas tahsin, dan pendampingan belajar.</p>
+          <h2 id="arsip-title">Arsip dokumentasi dan prestasi</h2>
+          <p>Pilih kategori atau buka foto untuk melihat keterangan lengkap.</p>
         </div>
 
-        <div class="gallery-thumbs">
-          {belajar.map((item) => (
-            <figure>
-              <img
-                src={item.src}
-                srcset={item.srcset}
-                sizes="(max-width: 40rem) 100vw, (max-width: 60rem) 50vw, 25vw"
-                width={item.width}
-                height={item.height}
-                alt={item.alt}
-                loading="lazy"
-                decoding="async"
-              />
-              <figcaption>{item.caption}</figcaption>
-            </figure>
-          ))}
+        <GalleryShowcase client:load items={showcaseItems} />
+      </div>
+    </section>
+
+    <section
+      class="section section--soft galeri-index-sec"
+      id="lingkup-dokumentasi"
+      aria-labelledby="lingkup-title"
+    >
+      <div class="container">
+        <div class="galeri-index-layout">
+          <div class="galeri-index-head">
+            <h2 id="lingkup-title">Lingkup arsip</h2>
+            <p>Dokumentasi kegiatan di {site.contact.addressShort}.</p>
+          </div>
+
+          <ol class="galeri-index-list">
+            <li>
+              <div>
+                <h3>Pembinaan Al-Qur&rsquo;an</h3>
+                <p>Halaqah, setoran hafalan, tahsin, pendampingan, dan murajaah.</p>
+              </div>
+            </li>
+            <li>
+              <div>
+                <h3>Kajian dan Sahabat HIC</h3>
+                <p>Kajian wali santri, taklim, serta penyaluran santunan.</p>
+              </div>
+            </li>
+            <li>
+              <div>
+                <h3>Catatan foto prestasi</h3>
+                <p>Kartu prestasi memakai foto placeholder sementara.</p>
+              </div>
+            </li>
+          </ol>
         </div>
       </div>
     </section>
 
-    <section class="section section--soft" aria-labelledby="bersama-title">
-      <div class="container">
-        <div class="section-head">
-          <h2 id="bersama-title">Kebersamaan dan berbagi</h2>
-          <p>Kajian wali santri, taklim, murajaah malam, dan paket bantuan.</p>
-        </div>
-
-        <div class="gallery-thumbs">
-          {bersama.map((item) => (
-            <figure>
-              <img
-                src={item.src}
-                srcset={item.srcset}
-                sizes="(max-width: 40rem) 100vw, (max-width: 60rem) 50vw, 25vw"
-                width={item.width}
-                height={item.height}
-                alt={item.alt}
-                loading="lazy"
-                decoding="async"
-              />
-              <figcaption>{item.caption}</figcaption>
-            </figure>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <section class="section section--tight" aria-labelledby="kunjung-title">
+    <section class="section section--tight galeri-cta-sec" aria-labelledby="kunjung-title">
       <div class="container">
         <div class="band on-dark">
           <div class="band-grid">
             <div>
-              <h2 id="kunjung-title">Melihat langsung</h2>
+              <h2 id="kunjung-title">Berkunjung ke sekretariat</h2>
               <p>
-                Kunjungan singkat bisa diatur dengan sekretariat. Hubungi dulu agar ada yang
-                mendampingi.
+                Hubungi WhatsApp{' '}
+                <a class="galeri-wa-link" href={waVisitHref} target="_blank" rel="noopener noreferrer">
+                  {site.contact.whatsapp}
+                </a>{' '}
+                sebelum berkunjung ke {site.contact.addressShort}.
               </p>
             </div>
             <div class="band-actions">
               <a class="btn btn-solid btn-lg" href="/kontak">Hubungi sekretariat</a>
-              <a class="btn btn-quiet btn-lg" href="/#program">Lihat program</a>
+              <a class="btn btn-quiet btn-lg" href="/program">Lihat program</a>
             </div>
           </div>
         </div>

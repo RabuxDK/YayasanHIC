@@ -6,9 +6,12 @@
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/hic/Header.astro';
 import Footer from '../components/hic/Footer.astro';
+import { getHicContent } from '../services/hicCms';
+
+const { site } = await getHicContent();
 ---
 
-<Layout title="Halaman tidak ditemukan | Yayasan HIC">
+<Layout title={`Halaman tidak ditemukan | ${site.name}`}>
   <Header />
   <main id="konten" class="section">
     <div class="container">
@@ -16,7 +19,7 @@ import Footer from '../components/hic/Footer.astro';
       <p>Tautan yang Anda tuju mungkin sudah dipindahkan.</p>
       <div class="band-actions">
         <a class="btn btn-solid" href="/">Kembali ke beranda</a>
-        <a class="btn btn-quiet" href="/#program">Lihat program</a>
+        <a class="btn btn-quiet" href="/program">Lihat program</a>
       </div>
     </div>
   </main>

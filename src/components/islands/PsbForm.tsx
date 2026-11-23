@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 
-const STORAGE_KEY = 'hic-psb-draft-v1';
+const STORAGE_KEY = 'hic-psb-draft-v2';
 
 type Gender = '' | 'Laki-laki' | 'Perempuan';
 
@@ -74,6 +74,9 @@ export function PsbForm({ waNumber, steps, levels, schedules, relations }: Props
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = { ...EMPTY, ...(JSON.parse(raw) as Partial<Draft>) };
+        if (parsed.jenjang && !levels.includes(parsed.jenjang)) parsed.jenjang = '';
+        if (parsed.jadwal && !schedules.includes(parsed.jadwal)) parsed.jadwal = '';
+        if (parsed.hubungan && !relations.includes(parsed.hubungan)) parsed.hubungan = '';
         setDraft(parsed);
         setRestored(Object.values(parsed).some((value) => value !== '' && value !== false));
       }
@@ -114,7 +117,7 @@ export function PsbForm({ waNumber, steps, levels, schedules, relations }: Props
     }
     if (index === 2) {
       if (!draft.jenjang) next.jenjang = 'Pilih jenjang.';
-      if (!draft.jadwal) next.jadwal = 'Pilih jadwal halaqah.';
+      if (!draft.jadwal) next.jadwal = 'Pilih preferensi waktu belajar.';
     }
     if (index === 3 && !draft.setuju) next.setuju = 'Centang persetujuan sebelum mengirim.';
     return next;
@@ -144,7 +147,7 @@ export function PsbForm({ waNumber, steps, levels, schedules, relations }: Props
 
   const buildHref = (registration: string) => {
     const lines = [
-      `Pendaftaran santri baru ${registration}`,
+      `Pendaftaran santri baru Rumah Qur\u2019an HIC ${registration}`,
       '',
       `Nama: ${draft.nama}`,
       draft.panggilan ? `Panggilan: ${draft.panggilan}` : '',
@@ -159,9 +162,9 @@ export function PsbForm({ waNumber, steps, levels, schedules, relations }: Props
       `Alamat: ${draft.alamat}`,
       '',
       `Jenjang: ${draft.jenjang}`,
-      `Jadwal: ${draft.jadwal}`,
+      `Preferensi waktu belajar: ${draft.jadwal}`,
       draft.catatan ? `Catatan: ${draft.catatan}` : '',
-    ];
+    ].filter((line, index, arr) => line !== '' || arr[index - 1] !== '');
     return `https://wa.me/${waNumber}?text=${encodeURIComponent(lines.join('\n'))}`;
   };
 
@@ -412,7 +415,7 @@ export function PsbForm({ waNumber, steps, levels, schedules, relations }: Props
             </div>
             <div className="field">
               <span className="field-label" id="jadwal-label">
-                Jadwal halaqah
+                Preferensi waktu belajar
               </span>
               <div className="choice-row" role="radiogroup" aria-labelledby="jadwal-label" aria-describedby={describedBy('jadwal')}>
                 {schedules.map((option) => (
@@ -470,7 +473,7 @@ export function PsbForm({ waNumber, steps, levels, schedules, relations }: Props
                 <dd>{draft.jenjang}</dd>
               </div>
               <div className="summary-row">
-                <dt>Jadwal</dt>
+                <dt>Waktu belajar</dt>
                 <dd>{draft.jadwal}</dd>
               </div>
             </dl>

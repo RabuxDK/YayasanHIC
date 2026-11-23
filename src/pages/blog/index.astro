@@ -1,0 +1,138 @@
+---
+/**
+ * Alias rute /blog menuju arsip artikel dengan canonical URL mengarah ke /artikel.
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/hic/Header.astro';
+import Footer from '../../components/hic/Footer.astro';
+import '../../styles/artikel.css';
+import { ArticleArchive, type ArchiveArticle } from '../../components/islands/ArticleArchive';
+import { getHicContent } from '../../services/hicCms';
+
+const { site, artikelPage, articles, posts: cmsPosts, source } = await getHicContent();
+const { heroTitle } = artikelPage;
+const hasCmsPosts = cmsPosts.length > 0;
+
+const archiveItems: ArchiveArticle[] = hasCmsPosts
+  ? cmsPosts.map((post) => ({
+      id: post.id,
+      title: post.title,
+      excerpt: post.excerpt || '',
+      category: post.category || 'Artikel',
+      date: post.publishedAt || '',
+      author: post.authorName || site.short,
+      readingTime: post.readingTime,
+      href: `/${post.slug}`,
+      ctaLabel: 'Baca artikel',
+      image: post.coverImage,
+      imageAlt: post.title,
+      tags: post.tags,
+    }))
+  : articles.map((article, index) => ({
+      id: `arsip-awal-${index + 1}`,
+      title: article.title,
+      excerpt: article.excerpt,
+      category: article.category,
+      date: article.date,
+      author: article.author,
+      readingTime: 0,
+      href: article.href,
+      ctaLabel: article.ctaLabel,
+      image: article.image,
+      imageAlt: article.imageAlt,
+      isPlaceholder: true,
+    }));
+
+const canonicalUrl = new URL('/artikel', site.url).href;
+---
+
+<Layout
+  title={`Artikel dan Kabar | ${site.name}`}
+  description="Arsip tulisan pembinaan Rumah Qur'an dan kabar kegiatan Sahabat Hidayatul Ilmi Cendekia."
+  canonicalUrl={canonicalUrl}
+>
+  <Header />
+
+  <main id="konten">
+    <section class="page-hero on-dark">
+      <div class="container">
+        <div>
+          <h1>{heroTitle}</h1>
+          <p>{artikelPage.heroSubtitle}</p>
+          <div class="page-hero-actions">
+            <a class="btn btn-solid btn-lg" href="#arsip-artikel">Jelajahi arsip</a>
+            <a class="btn btn-quiet btn-lg" href="/program">Lihat program</a>
+          </div>
+        </div>
+        <figure>
+          <img
+            src={artikelPage.heroImage}
+            srcset={artikelPage.heroImageSrcset}
+            sizes="(max-width: 60rem) 100vw, 44vw"
+            width="1280"
+            height="853"
+            alt={artikelPage.heroImageAlt}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </figure>
+      </div>
+    </section>
+
+    <section class="section section--soft section--spacious" id="arsip-artikel" aria-labelledby="arsip-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="arsip-title">Arsip tulisan</h2>
+          <p>Saring berdasarkan kategori atau cari topik kegiatan yayasan.</p>
+        </div>
+
+        <ArticleArchive client:load articles={archiveItems} source={source} hasCmsPosts={hasCmsPosts} />
+      </div>
+    </section>
+
+    <section class="section section--spacious" aria-labelledby="rubrik-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="rubrik-title">Fokus rubrik yayasan</h2>
+          <p>Bahasan utama seputar pendidikan Al-Qur&rsquo;an dan program sosial kemasyarakatan.</p>
+        </div>
+
+        <div class="editorial-rubric-grid">
+          {artikelPage.rubrics.map((rubric) => (
+            <div class="editorial-rubric-item">
+              <h3>{rubric.title}</h3>
+              <p>{rubric.text}</p>
+              <a class="editorial-action-link" href={rubric.ctaUrl}>
+                <span>{rubric.ctaLabel}</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                  <path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--tight" aria-labelledby="kontak-band-title">
+      <div class="container">
+        <div class="band on-dark">
+          <div class="band-grid">
+            <div>
+              <h2 id="kontak-band-title">Hubungi sekretariat yayasan</h2>
+              <p>Informasi kegiatan dan pendaftaran tersedia melalui WhatsApp {site.contact.whatsapp}.</p>
+            </div>
+            <div class="band-actions">
+              <a class="btn btn-solid btn-lg" href="/kontak">Hubungi sekretariat</a>
+              <a class="btn btn-quiet btn-lg" href="/psb">Pendaftaran santri</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>

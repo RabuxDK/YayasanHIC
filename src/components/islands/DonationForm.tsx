@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 
-const STORAGE_KEY = 'hic-donasi-draft-v1';
+const STORAGE_KEY = 'hic-donasi-draft-v2';
 
 const rupiah = new Intl.NumberFormat('id-ID', {
   style: 'currency',
@@ -75,10 +75,17 @@ export function DonationForm({ waNumber, programs, amounts, methods }: Props) {
       const program = params.get('program') ?? '';
       const raw = localStorage.getItem(STORAGE_KEY);
       const parsed = raw ? (JSON.parse(raw) as Partial<Draft>) : {};
+      const savedProgram = parsed.program && programs.some((item) => item.id === parsed.program)
+        ? parsed.program
+        : undefined;
+      const savedMethod = parsed.method && methods.some((item) => item.id === parsed.method)
+        ? parsed.method
+        : undefined;
       setDraft((current) => ({
         ...current,
         ...parsed,
-        program: programs.some((item) => item.id === program) ? program : parsed.program ?? current.program,
+        program: programs.some((item) => item.id === program) ? program : savedProgram ?? current.program,
+        method: savedMethod ?? current.method,
         amount: nominal > 0 ? nominal : parsed.amount ?? current.amount,
         custom: nominal > 0 ? String(nominal) : parsed.custom ?? current.custom,
       }));
@@ -103,7 +110,7 @@ export function DonationForm({ waNumber, programs, amounts, methods }: Props) {
   };
 
   const value = draft.custom ? Number(digits(draft.custom)) : draft.amount;
-  const programLabel = programs.find((item) => item.id === draft.program)?.label ?? 'HIC Berbagi';
+  const programLabel = programs.find((item) => item.id === draft.program)?.label ?? 'Sahabat Hidayatul Ilmi Cendekia';
   const methodLabel = methods.find((item) => item.id === draft.method)?.label ?? 'Transfer bank';
 
   const validate = (index: number): Errors => {
@@ -143,7 +150,7 @@ export function DonationForm({ waNumber, programs, amounts, methods }: Props) {
 
   const buildHref = (code: string) => {
     const lines = [
-      `Konfirmasi donasi ${code}`,
+      `Assalamualaikum Yayasan Hidayatul Ilmi Cendekia, konfirmasi donasi ${code}`,
       '',
       `Program: ${programLabel}`,
       `Frekuensi: ${draft.frequency}`,
@@ -153,7 +160,7 @@ export function DonationForm({ waNumber, programs, amounts, methods }: Props) {
       `WhatsApp: ${draft.wa}`,
       draft.email ? `Email: ${draft.email}` : '',
       draft.note ? `Catatan: ${draft.note}` : '',
-    ];
+    ].filter((line, index, arr) => line !== '' || arr[index - 1] !== '');
     return `https://wa.me/${waNumber}?text=${encodeURIComponent(lines.join('\n'))}`;
   };
 
@@ -429,7 +436,7 @@ export function DonationForm({ waNumber, programs, amounts, methods }: Props) {
             </dl>
 
             <p className="field-hint">
-              Instruksi pembayaran dikirim admin lewat WhatsApp setelah konfirmasi diterima.
+              Instruksi pembayaran dikirim pengurus lewat WhatsApp setelah konfirmasi diterima.
             </p>
 
             {sent && (

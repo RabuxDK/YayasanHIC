@@ -1,0 +1,118 @@
+---
+/**
+ * Halaman detail satu pos artikel dari RabuxID CMS pada rute root (/<slug>).
+ * Konten HTML berasal dari panel RabuxID CMS dan dirender dengan tema terang editorial HIC.
+ */
+
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/hic/Header.astro';
+import Footer from '../components/hic/Footer.astro';
+import '../styles/artikel.css';
+import { getHicContent } from '../services/hicCms';
+import { getBlogPosts } from '../services/blog';
+import type { CmsPost } from '../services/blog';
+
+export async function getStaticPaths() {
+  const reserved = new Set([
+    'artikel',
+    'blog',
+    'tentang',
+    'program',
+    'galeri',
+    'donasi',
+    'kontak',
+    'psb',
+    '404',
+  ]);
+  const { posts } = await getBlogPosts();
+  return posts
+    .filter((post) => post.slug && !reserved.has(post.slug))
+    .map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+interface Props {
+  post: CmsPost;
+}
+
+const { post } = Astro.props;
+const { site } = await getHicContent();
+
+const publishedLabel = post.publishedAt
+  ? new Date(post.publishedAt).toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    })
+  : '';
+
+const title = post.seoTitle || `${post.title} | ${site.name}`;
+const description = post.seoDescription || post.excerpt || site.description;
+const socialImage = post.ogImage || post.coverImage || undefined;
+const canonicalUrl = new URL(`/${post.slug}`, site.url).href;
+---
+
+<Layout
+  title={title}
+  description={description}
+  image={socialImage}
+  canonicalUrl={canonicalUrl}
+>
+  <Header />
+
+  <main id="konten">
+    <article class="article-single">
+      <div class="container">
+        <div class="article-measure">
+          <a class="article-back" href="/artikel">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M10 3.5 5.5 8 10 12.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>Semua artikel</span>
+          </a>
+
+          <header class="article-header">
+            <h1>{post.title}</h1>
+            {post.excerpt && <p class="article-dek">{post.excerpt}</p>}
+            <div class="article-byline">
+              {post.category && <span class="article-cat">{post.category}</span>}
+              {publishedLabel && (
+                <time datetime={post.publishedAt || undefined}>{publishedLabel}</time>
+              )}
+              {post.authorName && <span>{post.authorName}</span>}
+              {post.readingTime > 0 && <span>{post.readingTime} menit baca</span>}
+            </div>
+          </header>
+
+          {post.coverImage && (
+            <figure class="article-cover">
+              <img
+                src={post.coverImage}
+                alt={post.title}
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+              />
+            </figure>
+          )}
+
+          <div class="post-body" set:html={post.content} />
+
+          {post.tags.length > 0 && (
+            <ul class="article-tags" aria-label="Topik terkait">
+              {post.tags.map((tag) => (
+                <li>{tag}</li>
+              ))}
+            </ul>
+          )}
+
+          <div class="article-foot-nav">
+            <a class="btn btn-solid" href="/artikel">Kembali ke arsip</a>
+            <a class="btn btn-quiet" href="/kontak">Hubungi sekretariat</a>
+          </div>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+</Layout>

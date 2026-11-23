@@ -16,7 +16,7 @@ export function DonationQuick({ amounts }: Props) {
 
   const customValue = Number(custom.replace(/\D/g, ''));
   const value = customValue > 0 ? customValue : selected ?? 0;
-  const href = value > 0 ? `/donasi?nominal=${value}` : '/donasi';
+  const href = value > 0 ? `/donasi?nominal=${value}&program=sahabat-hic` : '/donasi';
 
   return (
     <div className="quick-panel">
@@ -60,7 +60,7 @@ export function DonationQuick({ amounts }: Props) {
 
       <p className="quick-note" aria-live="polite">
         {value > 0
-          ? `Donasi ${rupiah.format(value)} untuk HIC Berbagi.`
+          ? `Donasi ${rupiah.format(value)} untuk Sahabat Hidayatul Ilmi Cendekia.`
           : 'Masukkan nominal donasi.'}
       </p>
     </div>

@@ -1,0 +1,43 @@
+---
+/**
+ * Layar pemeliharaan bermerek Yayasan HIC saat status website di RabuxID CMS === 'maintenance'.
+ */
+
+import type { CmsSiteData } from '../../services/hicCms';
+
+interface Props {
+  site: CmsSiteData;
+}
+
+const { site } = Astro.props;
+const waHref = `https://wa.me/${site.contact.waNumber}?text=${encodeURIComponent(
+  `Assalamualaikum ${site.name}, saya menghubungi saat situs sedang dalam pemeliharaan.`,
+)}`;
+---
+
+<main id="konten">
+  <section class="page-hero on-dark">
+    <div class="container">
+      <div>
+        <h1>Situs sedang dalam pemeliharaan</h1>
+        <p>
+          Situs resmi {site.name} sedang diperbarui. Untuk informasi pendaftaran santri, donasi
+          Sahabat HIC, atau kunjungan sekretariat, silakan hubungi pengurus melalui WhatsApp.
+        </p>
+        <div class="page-hero-actions">
+          <a class="btn btn-solid btn-lg" href={waHref} target="_blank" rel="noopener noreferrer">
+            WhatsApp {site.contact.whatsapp}
+          </a>
+          <a class="btn btn-quiet btn-lg" href={site.contact.phoneHref}>
+            Telepon {site.contact.whatsapp}
+          </a>
+        </div>
+      </div>
+      <div class="contact-block">
+        <h2>Sekretariat resmi</h2>
+        <p>{site.contact.address}</p>
+        <p>WhatsApp: {site.contact.whatsapp}</p>
+      </div>
+    </div>
+  </section>
+</main>

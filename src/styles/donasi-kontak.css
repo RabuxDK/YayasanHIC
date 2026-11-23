@@ -1,0 +1,519 @@
+/* Hallmark · waive 7b · --color-paper is #FFFFFF in tokens.css · inherited client brand palette */
+/* Gaya khusus halaman Donasi dan Kontak Yayasan Hidayatul Ilmi Cendekia. */
+
+h1, h2 {
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.dk-section-spacious {
+  padding-block: var(--section-gap-l);
+}
+
+.dk-section-xl {
+  padding-block: var(--space-4xl);
+}
+
+.donasi-form-layout {
+  margin-bottom: var(--space-2xl);
+}
+
+.dk-section-medium {
+  padding-block: var(--section-gap);
+}
+
+.dk-section-compact {
+  padding-block: var(--section-gap-s);
+}
+
+.dk-btn-nowrap {
+  white-space: nowrap;
+}
+
+/* Donasi: Peruntukan amanah */
+.donasi-trust-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: var(--gap-columns);
+  align-items: start;
+}
+
+.donasi-trust-intro {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.donasi-trust-intro p {
+  font-size: var(--text-lead);
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+.donasi-trust-figure {
+  margin: var(--space-xs) 0 0;
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.donasi-trust-figure img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-card);
+  background: var(--color-paper-2);
+  box-shadow: var(--shadow-card);
+}
+
+.donasi-trust-figure figcaption {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.donasi-channels {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  counter-reset: channel;
+}
+
+.donasi-channel-item {
+  display: grid;
+  grid-template-columns: var(--space-xl) minmax(0, 1fr);
+  gap: var(--space-md);
+  align-items: start;
+  padding-block: var(--space-lg);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
+.donasi-channel-item:last-child {
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+}
+
+.donasi-channel-item::before {
+  counter-increment: channel;
+  content: counter(channel, decimal-leading-zero);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--display-weight);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+  color: var(--color-primary);
+}
+
+.donasi-channel-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+
+.donasi-channel-body h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--color-ink);
+}
+
+.donasi-channel-body p {
+  font-size: var(--text-md);
+  line-height: 1.6;
+  color: var(--color-ink-2);
+}
+
+.donasi-channel-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.24em;
+  white-space: nowrap;
+  transition: color var(--dur-short) var(--ease-out);
+}
+
+.donasi-channel-link:hover {
+  color: var(--color-primary-deep);
+  text-decoration-color: var(--color-primary);
+}
+
+/* Donasi: Sasaran & kegiatan Sahabat HIC */
+.donasi-activity-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: var(--gap-columns);
+  align-items: start;
+}
+
+.donasi-activity-aside {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.donasi-activity-aside > p {
+  font-size: var(--text-lead);
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+.donasi-beneficiary-panel {
+  background: var(--color-paper);
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: var(--radius-card);
+  padding: var(--space-lg);
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.donasi-beneficiary-panel h3 {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.donasi-beneficiary-panel p {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-ink-2);
+}
+
+.donasi-activity-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  counter-reset: activity;
+}
+
+.donasi-activity-list li {
+  display: grid;
+  grid-template-columns: var(--space-xl) minmax(0, 1fr);
+  gap: var(--space-md);
+  align-items: baseline;
+  padding-block: var(--space-lg);
+  border-top: var(--rule-hair) solid var(--color-rule);
+  font-size: var(--text-md);
+  line-height: 1.6;
+  color: var(--color-ink-2);
+}
+
+.donasi-activity-list li:last-child {
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+}
+
+.donasi-activity-list li::before {
+  counter-increment: activity;
+  content: counter(activity, decimal-leading-zero);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--display-weight);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-primary);
+}
+
+/* Donasi: Panel alur konfirmasi WhatsApp 3 langkah */
+.donasi-flow-panel {
+  background: var(--color-paper-2);
+  border-radius: var(--radius-card);
+  padding: var(--space-lg);
+  display: grid;
+  gap: var(--space-md);
+}
+
+.donasi-flow-panel h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--color-primary);
+}
+
+.donasi-flow-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-sm);
+  counter-reset: flow;
+}
+
+.donasi-flow-list li {
+  display: grid;
+  grid-template-columns: var(--space-lg) minmax(0, 1fr);
+  gap: var(--space-sm);
+  align-items: start;
+  padding-top: var(--space-sm);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
+.donasi-flow-list li::before {
+  counter-increment: flow;
+  content: counter(flow, decimal-leading-zero);
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: var(--display-weight);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-primary);
+  line-height: 1.4;
+}
+
+.donasi-flow-list strong {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.donasi-flow-list span {
+  display: block;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.donasi-direct-panel {
+  background: var(--color-paper);
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: var(--radius-card);
+  padding: var(--space-lg);
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.donasi-direct-panel h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--color-primary);
+}
+
+.donasi-direct-panel p {
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+/* Kontak: 3 Kartu aksi cepat WhatsApp */
+.kontak-intent-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap-columns);
+}
+
+.kontak-intent-item {
+  background: var(--color-paper-2);
+  border-radius: var(--radius-card);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+.kontak-intent-item h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  line-height: 1.25;
+  color: var(--color-ink);
+}
+
+.kontak-intent-item p {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-ink-2);
+}
+
+.kontak-intent-action {
+  margin-top: auto;
+  padding-top: var(--space-xs);
+}
+
+/* Kontak: Sekretariat resmi & ContactActions */
+.kontak-sekretariat-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: var(--gap-columns);
+  align-items: start;
+}
+
+.kontak-official-panel {
+  background: var(--color-paper);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-xl);
+  display: grid;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+
+.kontak-official-panel h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--color-primary);
+}
+
+.kontak-dl {
+  margin: 0;
+  display: grid;
+  gap: var(--space-md);
+}
+
+.kontak-dl-row {
+  display: grid;
+  gap: var(--space-2xs);
+  padding-bottom: var(--space-md);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+}
+
+.kontak-dl-row dt {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.kontak-dl-row dd {
+  margin: 0;
+  font-size: var(--text-md);
+  line-height: 1.55;
+  color: var(--color-ink);
+}
+
+.kontak-actions {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.kontak-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.kontak-actions-row .btn {
+  min-height: 48px;
+  white-space: nowrap;
+}
+
+.kontak-copy-status {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  min-height: 0;
+}
+
+.kontak-copy-status[data-tone="ok"],
+.kontak-copy-status[data-tone="error"] {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-input);
+}
+
+.kontak-copy-status[data-tone="ok"] {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.kontak-copy-status[data-tone="error"] {
+  background: var(--color-error-soft);
+  color: var(--color-error);
+}
+
+.kontak-service-panel {
+  background: var(--color-paper);
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: var(--radius-card);
+  padding: var(--space-xl);
+  display: grid;
+  gap: var(--space-md);
+  min-width: 0;
+}
+
+.kontak-service-panel h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--color-primary);
+}
+
+.kontak-service-panel p {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.kontak-service-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.kontak-service-links {
+  padding-top: var(--space-xs);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
+.kontak-service-links .text-link {
+  white-space: nowrap;
+}
+
+/* Responsif 3 state */
+@media (max-width: 64rem) {
+  .donasi-trust-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .donasi-activity-grid {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+  .kontak-intent-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .kontak-intent-item:last-child {
+    grid-column: 1 / -1;
+  }
+  .kontak-sekretariat-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  }
+}
+
+@media (max-width: 60rem) {
+  .donasi-trust-grid,
+  .donasi-activity-grid,
+  .kontak-sekretariat-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .kontak-intent-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .kontak-intent-item:last-child {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 40rem) {
+  .donasi-channel-item {
+    grid-template-columns: var(--space-lg) minmax(0, 1fr);
+    gap: var(--space-sm);
+  }
+  .donasi-activity-list li {
+    grid-template-columns: var(--space-lg) minmax(0, 1fr);
+    gap: var(--space-sm);
+  }
+  .kontak-intent-item,
+  .kontak-official-panel,
+  .kontak-service-panel,
+  .donasi-flow-panel,
+  .donasi-direct-panel,
+  .donasi-beneficiary-panel {
+    padding: var(--space-lg);
+  }
+  .kontak-actions-row .btn,
+  .kontak-service-actions .btn,
+  .kontak-intent-action .btn {
+    width: 100%;
+    padding-inline: var(--space-md);
+  }
+}

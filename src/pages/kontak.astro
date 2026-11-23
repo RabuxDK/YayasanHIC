@@ -1,21 +1,34 @@
 ---
 /**
- * Kontak: sekretariat, donasi, dan kunjungan.
+ * Kontak: jalur cepat WhatsApp per keperluan, alamat sekretariat resmi, dan aksi salin alamat.
  */
 
+import '../styles/donasi-kontak.css';
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/hic/Header.astro';
 import Footer from '../components/hic/Footer.astro';
-import { site } from '../data/hic';
+import { ContactActions } from '../components/islands/ContactActions';
+import { getHicContent } from '../services/hicCms';
 
-const waHref = `https://wa.me/${site.contact.waNumber}?text=${encodeURIComponent(
-  'Assalamualaikum, saya ingin bertanya tentang Yayasan Hidayatul Ilmi Cendekia.',
-)}`;
+const { site, kontak } = await getHicContent();
+const { visitTitle } = kontak;
+
+const waUrl = (message: string) =>
+  `https://wa.me/${site.contact.waNumber}?text=${encodeURIComponent(message)}`;
+
+const intents = kontak.intents.map((item) => ({
+  title: item.title,
+  summary: item.summary,
+  cta: item.cta,
+  href: waUrl(item.waMessage),
+}));
+
+const waVisitHref = waUrl(kontak.visitWaMessage);
 ---
 
 <Layout
   title={`Kontak | ${site.name}`}
-  description="Alamat sekretariat, WhatsApp, email, dan jam layanan Yayasan Hidayatul Ilmi Cendekia."
+  description={`Jalur cepat WhatsApp, alamat sekretariat, dan telepon resmi ${site.name} di ${site.contact.addressShort}.`}
 >
   <Header />
 
@@ -23,17 +36,20 @@ const waHref = `https://wa.me/${site.contact.waNumber}?text=${encodeURIComponent
     <section class="page-hero on-dark">
       <div class="container">
         <div>
-          <h1>Kontak dan kunjungan</h1>
-          <p>Sekretariat terbuka Senin sampai Sabtu, 08.00 sampai 16.00.</p>
+          <h1>{kontak.heroTitle}</h1>
+          <p>{kontak.heroSubtitle}</p>
+          <div class="page-hero-actions">
+            <a class="btn btn-solid btn-lg" href="#jalur-whatsapp">Pilih jalur WhatsApp</a>
+          </div>
         </div>
         <figure>
           <img
-            src="/images/galeri-taklim-01-1400.jpg"
-            srcset="/images/galeri-taklim-01-800.jpg 800w, /images/galeri-taklim-01-1400.jpg 1280w"
-            sizes="(max-width: 60rem) 100vw, 40vw"
+            src={kontak.heroImage}
+            srcset={kontak.heroImageSrcset}
+            sizes="(max-width: 60rem) 100vw, 42vw"
             width="1280"
             height="853"
-            alt="Taklim ba'da maghrib di ruang utama"
+            alt={kontak.heroImageAlt}
             loading="eager"
             fetchpriority="high"
             decoding="async"
@@ -42,48 +58,96 @@ const waHref = `https://wa.me/${site.contact.waNumber}?text=${encodeURIComponent
       </div>
     </section>
 
-    <section class="section" aria-labelledby="kontak-title">
+    <section class="section dk-section-spacious" id="jalur-whatsapp" aria-labelledby="jalur-title">
       <div class="container">
         <div class="section-head">
-          <h2 id="kontak-title">Hubungi sekretariat</h2>
-          <p>Kami membalas pada jam layanan. Untuk kunjungan, hubungi dulu.</p>
+          <h2 id="jalur-title">Jalur WhatsApp</h2>
+          <p>Hubungi {site.contact.whatsapp} sesuai keperluan.</p>
         </div>
 
-        <div class="contact-grid">
-          <div class="contact-block">
-            <h3>Sekretariat</h3>
-            <ul class="contact-list">
-              <li>
-                <span class="contact-key">Alamat</span>
-                <span>{site.contact.address}</span>
-              </li>
-              <li>
-                <span class="contact-key">WhatsApp</span>
-                <a href={waHref} target="_blank" rel="noopener noreferrer">{site.contact.whatsapp}</a>
-              </li>
-              <li>
-                <span class="contact-key">Telepon</span>
-                <a href={`tel:${site.contact.phone.replace(/[^\d+]/g, '')}`}>{site.contact.phone}</a>
-              </li>
-              <li>
-                <span class="contact-key">Email</span>
-                <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
-              </li>
-              <li>
-                <span class="contact-key">Jam layanan</span>
-                <span>{site.contact.hours}</span>
-              </li>
-            </ul>
+        <div class="kontak-intent-grid">
+          {intents.map((item) => (
+            <article class="kontak-intent-item">
+              <h3>{item.title}</h3>
+              <p>{item.summary}</p>
+              <div class="kontak-intent-action">
+                <a class="btn btn-quiet" href={item.href} target="_blank" rel="noopener noreferrer">
+                  {item.cta}
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--soft dk-section-spacious" id="sekretariat" aria-labelledby="sekretariat-title">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="sekretariat-title">Sekretariat resmi</h2>
+          <p>Alamat dan telepon resmi yayasan.</p>
+        </div>
+
+        <div class="kontak-sekretariat-grid">
+          <div class="kontak-official-panel">
+            <h3>Alamat dan telepon</h3>
+            <dl class="kontak-dl">
+              <div class="kontak-dl-row">
+                <dt>Alamat</dt>
+                <dd>{site.contact.address}</dd>
+              </div>
+              <div class="kontak-dl-row">
+                <dt>WhatsApp</dt>
+                <dd>{site.contact.whatsapp}</dd>
+              </div>
+            </dl>
+
+            <ContactActions
+              client:load
+              address={site.contact.address}
+              whatsapp={site.contact.whatsapp}
+              waNumber={site.contact.waNumber}
+              phoneHref={site.contact.phoneHref}
+            />
           </div>
 
-          <div class="contact-block">
-            <h3>Pendaftaran dan donasi</h3>
-            <p>Dua layanan yang paling sering ditanyakan.</p>
-            <div class="band-actions">
-              <a class="btn btn-solid" href="/psb">Daftar santri baru</a>
+          <div class="kontak-service-panel">
+            <h3>Formulir online</h3>
+            <p>Pendaftaran santri atau konfirmasi donasi.</p>
+            <div class="kontak-service-actions">
+              <a class="btn btn-quiet" href="/psb">Daftar santri</a>
               <a class="btn btn-quiet" href="/donasi">Konfirmasi donasi</a>
             </div>
-            <p>Instruksi pembayaran dikirim admin lewat WhatsApp.</p>
+            <div class="kontak-service-links">
+              <a class="text-link" href="/program">Lihat program</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dk-section-compact" id="kunjungan" aria-labelledby="kunjungan-title">
+      <div class="container">
+        <div class="band on-dark">
+          <div class="band-grid">
+            <div>
+              <h2 id="kunjungan-title">{visitTitle}</h2>
+              <p>
+                Konfirmasi melalui WhatsApp {site.contact.whatsapp} sebelum berkunjung ke Tlajung
+                Udik.
+              </p>
+            </div>
+            <div class="band-actions">
+              <a
+                class="btn btn-solid btn-lg"
+                href={waVisitHref}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Konfirmasi kunjungan
+              </a>
+              <a class="btn btn-quiet btn-lg" href="/tentang">Profil yayasan</a>
+            </div>
           </div>
         </div>
       </div>

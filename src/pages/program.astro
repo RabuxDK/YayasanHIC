@@ -1,0 +1,223 @@
+---
+/**
+ * Program: rincian lengkap Rumah Qur'an HIC dan Sahabat Hidayatul Ilmi Cendekia.
+ */
+
+import '../styles/program.css';
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/hic/Header.astro';
+import Footer from '../components/hic/Footer.astro';
+import { ProgramExplorer } from '../components/islands/ProgramExplorer';
+import { getHicContent } from '../services/hicCms';
+
+const { site, programPage, programsIntro, rumahQuran, sahabatHic } = await getHicContent();
+const { heroTitle } = programPage;
+---
+
+<Layout
+  title={`${programPage.heroTitle} | ${site.name}`}
+  description={`Rincian program ${rumahQuran.name} dan ${sahabatHic.name}.`}
+>
+  <Header />
+
+  <main id="konten">
+    <section class="page-hero on-dark">
+      <div class="container">
+        <div>
+          <h1>{heroTitle}</h1>
+          <p>{programPage.heroSubtitle}</p>
+          <div class="page-hero-actions">
+            <a class="btn btn-solid btn-lg" href="#rumah-quran">{rumahQuran.shortName}</a>
+            <a class="btn btn-quiet btn-lg" href="#sahabat-hic">{sahabatHic.shortName}</a>
+          </div>
+        </div>
+        <figure>
+          <img
+            src={programPage.heroImage}
+            srcset={programPage.heroImageSrcset}
+            sizes="(max-width: 60rem) 100vw, 42vw"
+            width="1280"
+            height="960"
+            alt={programPage.heroImageAlt}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </figure>
+      </div>
+    </section>
+
+    <section class="section section--soft pg-overview" aria-labelledby="intro-title">
+      <div class="container">
+        <div class="pg-overview-grid">
+          <div class="pg-overview-copy">
+            <h2 id="intro-title">Dua Program Utama</h2>
+            <p class="pg-overview-lead">{programsIntro}</p>
+          </div>
+
+          <ol class="pg-index">
+            <li class="pg-index-item">
+              <div class="pg-index-body">
+                <h3>{rumahQuran.name}</h3>
+                <p>{rumahQuran.tagline}</p>
+                <a class="text-link" href="#rumah-quran">Lihat Rumah Qur&rsquo;an</a>
+              </div>
+            </li>
+            <li class="pg-index-item">
+              <div class="pg-index-body">
+                <h3>{sahabatHic.name}</h3>
+                <p>{sahabatHic.tagline}</p>
+                <a class="text-link" href="#sahabat-hic">Lihat Sahabat HIC</a>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="section pg-section-spacious" id="rumah-quran" aria-labelledby="rq-title">
+      <div class="container">
+        <div class="pg-split">
+          <figure class="pg-logo-frame">
+            <img
+              src={rumahQuran.image}
+              width="640"
+              height="640"
+              alt={rumahQuran.imageAlt}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+          <div class="pg-stack">
+            <h2 id="rq-title">{rumahQuran.name}</h2>
+            <p class="pg-tagline">{rumahQuran.tagline}</p>
+            <p class="pg-summary">{rumahQuran.summary}</p>
+            <div class="program-actions">
+              <a class="btn btn-solid" href="/psb">Daftar santri baru</a>
+              <a class="btn btn-quiet" href="/kontak">Tanya sekretariat</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="pg-subblock pg-goals-grid" id="rq-tujuan">
+          <div class="pg-goals-aside">
+            <h3>Tujuan Program Rumah Qur&rsquo;an</h3>
+            <p>{rumahQuran.goalsSubtitle}</p>
+            <figure class="pg-aside-photo">
+              <img
+                src={rumahQuran.goalsImage}
+                srcset={rumahQuran.goalsImageSrcset}
+                sizes="(max-width: 60rem) 100vw, 38vw"
+                width="1280"
+                height="853"
+                alt={rumahQuran.goalsImageAlt}
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+          </div>
+          <ol class="pg-num-list">
+            {rumahQuran.goals.map((goal) => (
+              <li>
+                <p>{goal}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="section section--soft pg-section-spacious"
+      id="kurikulum"
+      aria-labelledby="kurikulum-title"
+    >
+      <div class="container">
+        <ProgramExplorer
+          client:visible
+          mode="rumah-quran"
+          rumahQuran={rumahQuran}
+          sahabatHic={sahabatHic}
+          waNumber={site.contact.waNumber}
+        />
+      </div>
+    </section>
+
+    <section class="section pg-section-spacious" id="sahabat-hic" aria-labelledby="sh-title">
+      <div class="container">
+        <div class="pg-split">
+          <figure class="pg-logo-frame">
+            <img
+              src={sahabatHic.image}
+              width="640"
+              height="640"
+              alt={sahabatHic.imageAlt}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+          <div class="pg-stack">
+            <h2 id="sh-title">{sahabatHic.name}</h2>
+            <p class="pg-tagline">{sahabatHic.tagline}</p>
+            <p class="pg-summary">{sahabatHic.summary}</p>
+            <div class="pg-beneficiary">
+              <h3>Sasaran Penerima Manfaat</h3>
+              <p>{sahabatHic.beneficiaries}</p>
+            </div>
+            <div class="program-actions">
+              <a class="btn btn-solid" href="/donasi">Salurkan donasi</a>
+              <a class="btn btn-quiet" href="/kontak">Tanya sekretariat</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="section section--soft pg-section-latar"
+      id="sh-latar"
+      aria-labelledby="sh-latar-title"
+    >
+      <div class="container">
+        <div class="pg-split pg-split--latar">
+          <figure class="pg-latar-media">
+            <img
+              src={sahabatHic.backgroundImage}
+              srcset={sahabatHic.backgroundImageSrcset}
+              sizes="(max-width: 60rem) 100vw, 46vw"
+              width="1280"
+              height="720"
+              alt={sahabatHic.backgroundImageAlt}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+          <div class="pg-stack">
+            <h2 id="sh-latar-title">Latar Belakang Program</h2>
+            {sahabatHic.background.map((paragraph) => (
+              <p class="pg-prose">{paragraph}</p>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="section pg-section-rincian"
+      id="sh-rincian"
+      aria-labelledby="sh-tujuan-title"
+    >
+      <div class="container">
+        <ProgramExplorer
+          client:visible
+          mode="sahabat"
+          rumahQuran={rumahQuran}
+          sahabatHic={sahabatHic}
+          waNumber={site.contact.waNumber}
+        />
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>

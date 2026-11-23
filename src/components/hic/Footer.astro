@@ -1,13 +1,15 @@
 ---
 /**
- * Footer situs: identitas, tautan program, dan kontak sekretariat.
+ * Footer situs: identitas, tautan program, dan kontak sekretariat resmi.
  */
 
-import { site } from '../../data/hic';
+import { getHicContent } from '../../services/hicCms';
+
+const { site, rumahQuran, sahabatHic } = await getHicContent();
 
 const year = new Date().getFullYear();
 const waHref = `https://wa.me/${site.contact.waNumber}?text=${encodeURIComponent(
-  'Assalamualaikum, saya ingin bertanya tentang Yayasan Hidayatul Ilmi Cendekia.',
+  `Assalamualaikum, saya ingin bertanya tentang ${site.name}.`,
 )}`;
 ---
 
@@ -16,16 +18,16 @@ const waHref = `https://wa.me/${site.contact.waNumber}?text=${encodeURIComponent
     <div class="footer-grid">
       <div class="footer-brand">
         <span class="footer-logo">
-          <img src="/images/logo-hic-160.png" width="40" height="40" alt="" />
+          <img src={site.logo} width="40" height="40" alt="" />
         </span>
-        <p>Rumah Qur&rsquo;an dan program berbagi.</p>
+        <p>{site.footerSummary}</p>
       </div>
 
       <div>
         <h2 class="footer-title">Program</h2>
         <ul class="footer-list">
-          <li><a href="/#program">Rumah Qur&rsquo;an</a></li>
-          <li><a href="/#program">HIC Berbagi</a></li>
+          <li><a href="/program#rumah-quran">{rumahQuran.shortName}</a></li>
+          <li><a href="/program#sahabat-hic">{sahabatHic.shortName}</a></li>
           <li><a href="/psb">Penerimaan santri</a></li>
         </ul>
       </div>
@@ -33,19 +35,16 @@ const waHref = `https://wa.me/${site.contact.waNumber}?text=${encodeURIComponent
       <div>
         <h2 class="footer-title">Halaman</h2>
         <ul class="footer-list">
-          <li><a href="/#tentang">Tentang</a></li>
-          <li><a href="/galeri">Galeri</a></li>
-          <li><a href="/donasi">Donasi</a></li>
-          <li><a href="/kontak">Kontak</a></li>
+          {site.nav.map((item) => (
+            <li><a href={item.href}>{item.label}</a></li>
+          ))}
         </ul>
       </div>
 
       <div class="footer-contact">
-        <h2 class="footer-title">Kontak</h2>
+        <h2 class="footer-title">Sekretariat</h2>
         <p>{site.contact.address}</p>
         <a href={waHref} target="_blank" rel="noopener noreferrer">WhatsApp {site.contact.whatsapp}</a>
-        <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
-        <p>{site.contact.hours}</p>
       </div>
     </div>
 

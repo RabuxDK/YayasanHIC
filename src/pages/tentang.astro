@@ -1,0 +1,162 @@
+---
+/**
+ * Tentang: Profil lengkap Yayasan Hidayatul Ilmi Cendekia, semangat, visi, dan tujuh misi.
+ */
+
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/hic/Header.astro';
+import Footer from '../components/hic/Footer.astro';
+import { getHicContent } from '../services/hicCms';
+
+const { site, profile } = await getHicContent();
+const { heroTitle } = profile;
+---
+
+<Layout
+  title={`${heroTitle} | ${site.name}`}
+  description={`Profil, Visi, dan 7 Misi ${site.name} di ${site.contact.addressShort}.`}
+>
+  <Header />
+
+  <main id="konten">
+    <section class="page-hero on-dark">
+      <div class="container">
+        <div>
+          <h1>{heroTitle}</h1>
+          <p>{profile.heroSubtitle}</p>
+          <div class="page-hero-actions">
+            <a class="btn btn-solid btn-lg" href="/program">Program unggulan</a>
+            <a class="btn btn-quiet btn-lg" href="/kontak">Hubungi sekretariat</a>
+          </div>
+        </div>
+        <figure>
+          <img
+            src={profile.heroImage}
+            srcset={profile.heroImageSrcset}
+            sizes="(max-width: 60rem) 100vw, 42vw"
+            width="1280"
+            height="853"
+            alt={profile.heroImageAlt}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </figure>
+      </div>
+    </section>
+
+    <section class="section section--spacious" aria-labelledby="profil-title">
+      <div class="container">
+        <div class="prose-split">
+          <figure class="prose-media prose-media--tall">
+            <img
+              src={profile.aboutPhoto1}
+              srcset={profile.aboutPhoto1Srcset}
+              sizes="(max-width: 60rem) 100vw, 46vw"
+              width="1280"
+              height="853"
+              alt={profile.aboutPhoto1Alt}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+          <div class="prose-stack">
+            <h2 id="profil-title">Tentang yayasan</h2>
+            <p>{profile.paragraphs[0]}</p>
+            <p>{profile.paragraphs[1]}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--soft section--spacious" aria-labelledby="semangat-title">
+      <div class="container">
+        <div class="prose-split">
+          <div class="prose-stack">
+            <h2 id="semangat-title">Semangat pembinaan</h2>
+            <p>{profile.paragraphs[2]}</p>
+            <p>{profile.paragraphs[3]}</p>
+          </div>
+          <figure class="prose-media prose-media--tall">
+            <img
+              src={profile.aboutPhoto2}
+              srcset={profile.aboutPhoto2Srcset}
+              sizes="(max-width: 60rem) 100vw, 46vw"
+              width="1280"
+              height="914"
+              alt={profile.aboutPhoto2Alt}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--spacious" aria-labelledby="visi-title">
+      <div class="container">
+        <div class="band on-dark vision-band">
+          <h2 id="visi-title">Visi Yayasan HIC</h2>
+          <p class="vision-quote">{profile.vision}</p>
+          <div class="pillars-row">
+            {profile.pillars.map((pillar) => (
+              <div class="pillar-item">
+                <h3>{pillar.title}</h3>
+                <p>{pillar.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--soft" id="misi" aria-labelledby="misi-title">
+      <div class="container">
+        <div class="split-list">
+          <div class="split-list-aside">
+            <h2 id="misi-title">Misi Yayasan</h2>
+            <p>Tujuh langkah pembinaan keislaman, karakter, dan kepedulian umat.</p>
+            <figure>
+              <img
+                src={profile.missionPhoto}
+                srcset={profile.missionPhotoSrcset}
+                sizes="(max-width: 60rem) 100vw, 38vw"
+                width="1280"
+                height="854"
+                alt={profile.missionPhotoAlt}
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+          </div>
+          <ol class="numbered-list">
+            {profile.missions.map((mission) => (
+              <li>
+                <p>{mission}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--tight" aria-labelledby="sekretariat-title">
+      <div class="container">
+        <div class="band on-dark">
+          <div class="band-grid">
+            <div>
+              <h2 id="sekretariat-title">Sekretariat Yayasan HIC</h2>
+              <p>{site.contact.address}</p>
+            </div>
+            <div class="band-actions">
+              <a class="btn btn-solid btn-lg" href="/program">Lihat program</a>
+              <a class="btn btn-quiet btn-lg" href="/kontak">Hubungi sekretariat</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
