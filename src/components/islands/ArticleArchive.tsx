@@ -34,7 +34,7 @@ function formatDateLabel(raw: string): string {
   });
 }
 
-export function ArticleArchive({ articles, source, hasCmsPosts }: Props) {
+export function ArticleArchive({ articles, hasCmsPosts }: Props) {
   const [selectedCategory, setSelectedCategory] = useState('Semua');
   const [query, setQuery] = useState('');
   const searchRef = useRef<HTMLInputElement>(null);
@@ -69,15 +69,13 @@ export function ArticleArchive({ articles, source, hasCmsPosts }: Props) {
   };
 
   const statusText =
-    source === 'offline'
-      ? 'Arsip artikel terhubung ke CMS RabuxID saat build produksi. Saat ini ditampilkan catatan kegiatan awal dari profil resmi yayasan.'
-      : 'Belum ada pos yang dipublikasikan dari panel RabuxID. Saat ini ditampilkan catatan kegiatan awal dari profil resmi yayasan.';
+    'Artikel terbaru yayasan akan ditampilkan di halaman ini. Saat ini ditampilkan ringkasan kegiatan dari profil resmi Yayasan Hidayatul Ilmi Cendekia.';
 
   return (
     <div className="archive-shell">
       {!hasCmsPosts && (
         <div className="cms-status-note" role="status">
-          <h3 className="cms-status-title">Belum ada pos terpublikasi dari CMS RabuxID</h3>
+          <h3 className="cms-status-title">Belum ada artikel terbaru</h3>
           <p>{statusText}</p>
         </div>
       )}
@@ -85,7 +83,7 @@ export function ArticleArchive({ articles, source, hasCmsPosts }: Props) {
       {articles.length === 0 ? (
         <div className="archive-empty">
           <h3>Belum ada artikel tersedia</h3>
-          <p>Artikel yang dipublikasikan melalui panel RabuxID akan muncul di halaman ini.</p>
+          <p>Tulisan dan kabar kegiatan Yayasan Hidayatul Ilmi Cendekia akan ditampilkan di halaman ini.</p>
           <a className="btn btn-solid" href="/">
             Kembali ke beranda
           </a>

@@ -38,10 +38,13 @@ const brandSub = /^Yayasan\s+/i.test(site.name) ? 'Yayasan' : site.short;
           </li>
         ))}
       </ul>
+      <div class="nav-mobile-cta">
+        <a class="btn btn-solid" href="/psb">Daftar PSB</a>
+      </div>
     </nav>
 
     <div class="header-actions">
-      <a class="btn btn-solid" href="/psb">Daftar PSB</a>
+      <a class="btn btn-solid header-cta" href="/psb">Daftar PSB</a>
       <button
         class="nav-toggle"
         type="button"
@@ -49,8 +52,11 @@ const brandSub = /^Yayasan\s+/i.test(site.name) ? 'Yayasan' : site.short;
         aria-controls="navigasi"
         aria-label="Buka menu navigasi"
       >
-        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+        <svg class="nav-icon-open" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
           <path d="M3 5h14M3 10h14M3 15h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+        <svg class="nav-icon-close" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+          <path d="M5 5l10 10M15 5L5 15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
         </svg>
         <span class="nav-toggle-label">Menu</span>
       </button>
@@ -61,24 +67,34 @@ const brandSub = /^Yayasan\s+/i.test(site.name) ? 'Yayasan' : site.short;
 <script>
   const header = document.querySelector<HTMLElement>('.site-header');
   const toggle = header?.querySelector<HTMLButtonElement>('.nav-toggle');
+  const toggleLabel = toggle?.querySelector<HTMLSpanElement>('.nav-toggle-label');
 
   if (header && toggle) {
     const setOpen = (open: boolean) => {
       header.toggleAttribute('data-open', open);
       toggle.setAttribute('aria-expanded', String(open));
       toggle.setAttribute('aria-label', open ? 'Tutup menu navigasi' : 'Buka menu navigasi');
+      if (toggleLabel) toggleLabel.textContent = open ? 'Tutup' : 'Menu';
     };
 
     toggle.addEventListener('click', () => setOpen(!header.hasAttribute('data-open')));
 
-    header.addEventListener('keydown', (event) => {
+    document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && header.hasAttribute('data-open')) {
         setOpen(false);
         toggle.focus();
       }
     });
 
-    header.querySelectorAll<HTMLAnchorElement>('.nav-link').forEach((link) => {
+    document.addEventListener('click', (event) => {
+      if (!header.hasAttribute('data-open')) return;
+      const target = event.target as Node | null;
+      if (target && !header.contains(target)) {
+        setOpen(false);
+      }
+    });
+
+    header.querySelectorAll<HTMLAnchorElement>('.nav-link, .nav-mobile-cta a').forEach((link) => {
       link.addEventListener('click', () => setOpen(false));
     });
   }
