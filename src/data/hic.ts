@@ -55,7 +55,7 @@ export interface Achievement {
 export const site = {
   name: 'Yayasan Hidayatul Ilmi Cendekia',
   short: 'HIC',
-  url: 'https://yayasanhic.rabux.id',
+  url: 'https://hicgroup.or.id',
   motto: 'Beriman, Berilmu, dan Beramal',
   description:
     'Yayasan Hidayatul Ilmi Cendekia: lembaga sosial dan pendidikan Al-Qur\u2019an melalui Rumah Qur\u2019an HIC dan Sahabat Hidayatul Ilmi Cendekia di Gunung Putri, Bogor.',

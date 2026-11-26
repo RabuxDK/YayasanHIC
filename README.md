@@ -3,7 +3,7 @@
 Situs resmi Yayasan Hidayatul Ilmi Cendekia: Rumah Qur'an Hidayatul Ilmi Cendekia dan Sahabat Hidayatul Ilmi Cendekia.
 Dibangun dengan Astro (static site generation), Tailwind CSS v4, dan React 19 islands.
 
-- Produksi: https://hic.rabux.id
+- Produksi: https://hicgroup.or.id
 - Data konten terpusat di `src/data/hic.ts`
 
 ## Menjalankan

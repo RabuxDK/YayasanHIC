@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: process.env.PUBLIC_SITE_URL || 'https://yayasanhic.rabux.id',
+  site: process.env.PUBLIC_SITE_URL || 'https://hicgroup.or.id',
   integrations: [
     react(),
     sitemap({
